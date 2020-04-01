@@ -43,7 +43,6 @@ cell_bottom_str = "| " + symbols["empty space"] + " "
 custom_scr = ExtendedScreen(cell_top_str, cell_bottom_str, symbols["empty space"], symbols["collision"], symbols["out of bounds"])
 
 def main(screen):
-    # -1 so cursor doesn't wrap past bottom of screen, crashing curses
     draw_cell_boundaries(custom_scr)
     custom_scr.scr.move(custom_scr.orig_y, custom_scr.orig_x)
     recording = False
@@ -83,9 +82,11 @@ def main(screen):
         elif key in movement_keys:
             handle_movement(custom_scr, grid, key)
         elif key in keybinds["menu"]:
+            curses.curs_set(0)  # Hide cursor while menu is up
             display_menu(custom_scr)
             designated_char = return_designated_char(custom_scr)
             draw_cell_boundaries(custom_scr)
+            curses.curs_set(1)  # Show cursor again
         elif key in keybinds["place"]:
             place_char(custom_scr, grid, designated_char)
         set_footer(custom_scr, grid, recording, register)
