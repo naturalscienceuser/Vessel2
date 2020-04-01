@@ -1,0 +1,93 @@
+Up
+k,up
+
+Down
+j,down
+
+Left
+h,left
+
+Right
+l,right
+
+Shift Left
+KEY_LEFT
+
+Shift Right
+KEY_RIGHT
+
+Shift Up
+KEY_UP
+
+Shift Down
+KEY_DOWN
+
+Row Start
+s
+
+Row Middle
+C
+
+Row End
+e
+
+Column Start
+S
+
+Column Middle
+M
+
+Column End
+E
+
+Place
+c
+
+Quit
+q
+
+Record
+r
+
+Playback
+R
+
+Change Register
+"
+
+Menu
+m
+
+Dash Refresh
+1
+
+Checkpoint
+2
+
+Shine Block
+3
+
+Bomb Block
+4
+
+Metal Block
+5
+
+Fuse
+6
+
+Jump Pad
+7
+
+Ice Block
+8
+
+Blue Switch Block
+9
+
+Red Switch Block
+0
+
+Dark Block
+-
+
