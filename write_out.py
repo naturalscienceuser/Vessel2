@@ -1,5 +1,4 @@
 import mmap
-#from pathlib import Path
 from settings import symbols, symbol_doubles
 from level_object import LevelObject
 from add_remove_collision import add_remove_collision
@@ -37,6 +36,3 @@ def write_out(level_file, in_grid):
     for i in range(len(in_grid.array)):
         objects_added = write_row(level_file, in_grid, i, total_obj_num)
         total_obj_num += objects_added
-
-#def write_out(level_file, in_grid):
-#    write_rows(level_file, in_grid)
