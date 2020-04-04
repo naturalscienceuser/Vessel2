@@ -6,8 +6,8 @@ from add_remove_collision import add_remove_collision
 full_val = symbols["collision"]
 empty_val = symbols["empty space"]
 
-# before I had called this write_rows, but I think we can just make this write_out
 def write_out(level_file, in_grid):
+    """Assumes stacks have been cleared i.e. no preexisting objs"""
 
     def write_row(level_file, in_grid, row_num, in_obj_num=0):
         row = in_grid.array[row_num]
@@ -25,14 +25,13 @@ def write_out(level_file, in_grid):
                 elif cell == empty_val:
                     remove = True
                 level_file.add_remove_collision(i, row_num, remove)
-                obj_stack_offset = level_file.return_obj_stack_offset(i, row_num)
+                obj_stack_offset = level_file.return_obj_stack_offset(i*16, row_num*16)
                 # If there was no object there to begin with, why bother removing?
-                if not obj_stack_offset:  
+                if obj_stack_offset is None:  # No obj present
                     continue
                 level_file.remove_obj(obj_stack_offset)
         return obj_num
 
     total_obj_num = 0
     for i in range(len(in_grid.array)):
-        objects_added = write_row(level_file, in_grid, i, total_obj_num)
-        total_obj_num += objects_added
+        total_obj_num = write_row(level_file, in_grid, i, total_obj_num)
