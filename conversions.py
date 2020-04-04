@@ -34,7 +34,7 @@ def to_file_bytes(in_double, inner_table=True):
     a length 32 string as oppposed to length 16
     """
     binary = struct.pack("d", in_double)
-    hex_from_bin = binascii.hexlify(binary)
+    hex_from_bin = binascii.hexlify(binary).upper()  # hope .upper() doesn't break anything
     if inner_table:
         return codecs.encode(hex_from_bin, "hex")
     else:
