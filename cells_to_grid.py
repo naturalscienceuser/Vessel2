@@ -5,7 +5,7 @@ from settings import double_symbols
 
 # TODO: Finish writing this function (It's done?)
 def return_obj_coords(level_file):
-    # There are 1001 objects in a stack/at max it seems
+    # There are 1000 objects in a stack/at max it seems
     obj_table_offset = level_file.obj_stack_offsets[0]
     obj_stack_end = obj_table_offset + (1000 * 48)  # based on looking, 1000 seems to be right
     coords = []

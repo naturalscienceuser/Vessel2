@@ -1,4 +1,3 @@
-from preserve_pos import preserve_pos
 from movement import *
 from conversions import *
 from settings import keybinds
@@ -44,8 +43,7 @@ def populate_screen_cells(custom_scr, grid):
     custom_scr.scr.move(initial_y, initial_x)
 
 
-# NOTE: we probably don't want the menu param at all, I think it is better to make the menu in another func
-def set_footer(custom_scr, grid, recording=False, reg="\"", menu=False):
+def set_footer(custom_scr, grid, recording=False, reg="\""):
     initial_y, initial_x = custom_scr.scr.getyx()
     grid_x, grid_y = to_grid_xy(custom_scr)
     display_x = grid_x + grid.x_offset
@@ -83,7 +81,6 @@ def display_menu(custom_scr):
     # We turn it into a list basically just so we can slice it, such that it
     # only contains keybinds that correspond to object placements
     obj_key_pairs = [[obj_name, key] for obj_name, key in keybinds.items()][20:]
-    #obj_key_pairs.append(["mystery block", "m_key"])
     for i, pair in enumerate(obj_key_pairs):
         justified_obj_name = pair[0].ljust(18)
         justified_keybinds = str(pair[1]).ljust(10)
@@ -94,7 +91,6 @@ def display_menu(custom_scr):
     if len(obj_key_pairs) % 2 != 0:
         menu_text += "\n"
     menu_text += "="*59 + "\n" + " "*59
-
     custom_scr.scr.addstr(menu_text)
     custom_scr.scr.move(initial_y, initial_x)
 
