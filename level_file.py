@@ -72,14 +72,29 @@ class LevelFile:
         self.mmap_obj[offset:offset+16] = bytes_to_add
 
     def set_option(self, option, val):
+        # MUSIC VALUES
+        # song 8: 125
+        # song 7: 90
+        # song 6: 42
+        # song 5: 40
+        # song 4: 36
+        # song 3: 35
+        # song 2: 34
+        # song 1: 29
+        # song 0: 0
         option_offsets = {
             "spawny": 2336, "canwalljump": 2232,
-            "playerlife": 2000, "goaly": 1880
+            "playerlife": 2000, "goaly": 1880,
+            "music": 1780
         }
         offset = option_offsets[option]
         val_bytes = to_file_bytes(val)
         self.mmap_obj[offset:offset+32] = val_bytes
 
+## testing options changes
+#if __name__ == "__main__":
+#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/music_0/a.lvl")
+#    test_inst.set_option("music", 0)
 
 # test clearing stack, seems to work
 #if __name__ == "__main__":
@@ -105,11 +120,6 @@ class LevelFile:
 #    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/512_288/a.lvl")
 #    print(test_inst.return_obj_stack_offset(0, 0))
 #    test_inst.remove_obj(0)
-
-# testing options changes
-#if __name__ == "__main__":
-#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/level_tests/level_test3/scratch/a.lvl")
-#    test_inst.set_option("goaly", 32)
 
 #def return_num_objs(self):
 #    """Return number of objects in file. Can break if stacks are not defragmented"""
