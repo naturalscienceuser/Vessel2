@@ -55,7 +55,7 @@ def set_footer(custom_scr, grid, recording=False, reg="\""):
         display_str += "recording"
     else:
         display_str += " " * len("recording")
-    custom_scr.scr.addstr(custom_scr.screen_h - 3, 0, display_str)
+    custom_scr.scr.addstr(custom_scr.screen_h - 2, 0, display_str)
     custom_scr.scr.move(initial_y, initial_x)
 
 
