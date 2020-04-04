@@ -32,6 +32,10 @@ with open(filepath, "r+b") as f:
     mm = mmap.mmap(f.fileno(), length=0)
     prior_collis_coordinates = return_all_collis_coords(level_file)
     prior_obj_coords = return_obj_coords(level_file)  # [[xpos, ypos, symbol], [xpos, ypos, symbol], ...]
+    # Now that we know prior coords, we can clear stacks of level file. Previous objects are in grid, so
+    # They will be written back out anyway. This way the write_out() function does not have to know anything
+    # about prior objects, it just writes out everything that was in the grid. That makes it easier to code.
+    level_file.clear_stacks()
 for collis_coordpair in prior_collis_coordinates:
     grid.set_point(int(collis_coordpair[0]), int(collis_coordpair[1]), symbols["collision"])
 for obj_coordset in prior_obj_coords:
@@ -76,7 +80,7 @@ def main(screen):
             recorded_keys[register].append(key)
         elif key in keybinds["playback"]:
             playing_back = True
-            continue
+            continue  # do we need this? alternatively, should they all have continues?
         if key in keybinds["change register"]:
             register = custom_scr.scr.getkey()
         elif key in movement_keys:
