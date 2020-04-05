@@ -1,7 +1,11 @@
 from movement import *
 from conversions import *
-from settings import keybinds
+#from settings import keybinds
+#import settings
+from settings import symbols_list
 from curses import error
+from itertools import cycle
+
 
 def draw_cell_boundaries(custom_scr):
     initial_y, initial_x = custom_scr.scr.getyx()
@@ -73,26 +77,80 @@ def set_cell(custom_scr, grid, in_val, cell_x=None, cell_y=None):
     custom_scr.scr.move(initial_y, initial_x)
 
 
-def display_menu(custom_scr):
+def menu(custom_scr, title, items):
+    menu_w = 45
+    item_w = 18
     initial_y, initial_x = custom_scr.scr.getyx()
-    custom_scr.scr.move(0,0)
-    menu_text = "OBJECT MENU".center(58) + "|\n"
-    menu_text += "-"*58 + "|\n"
-    # We turn it into a list basically just so we can slice it, such that it
-    # only contains keybinds that correspond to object placements
-    obj_key_pairs = [[obj_name, key] for obj_name, key in keybinds.items()][20:]
-    for i, pair in enumerate(obj_key_pairs):
-        justified_obj_name = pair[0].ljust(18)
-        justified_keybinds = str(pair[1]).ljust(10)
-        menu_text += f"{justified_obj_name.title()} {justified_keybinds}"
-        if i % 2 != 0:
-            menu_text += "|\n"
-    # since it's 2 cols, we need to account for if there are an odd number of obj/key pairs
-    if len(obj_key_pairs) % 2 != 0:
-        menu_text += "\n"
-    menu_text += "="*59 + "\n" + " "*59
-    custom_scr.scr.addstr(menu_text)
-    custom_scr.scr.move(initial_y, initial_x)
+    items_by_page = [items[i:i+9] for i in range(0, len(items), 9)]
+    pages = cycle([i for i in range(len(items_by_page))])
+    current_page = pages.__next__()
+    while True:
+        custom_scr.scr.move(0, 0)
+        menu_text = title.center(menu_w) + "|\n" + "-"*menu_w + "|\n"
+        current_items = items_by_page[current_page]
+        num_items = len(current_items)
+        rows_left = 5
+        for i in range(0, num_items, 2):
+            rows_left -= 1
+            left_item = current_items[i].ljust(item_w)
+            try:
+                right_item = current_items[i+1].ljust(item_w)
+                menu_text += f"{i}: {left_item.title()} | {i+1}: {right_item.title()}|\n"
+            # Happens if at end when there are an odd num of items so we add Next page text to last row
+            except IndexError:
+                menu_text += f"{i}: {left_item.title()} | 9: "
+                menu_text += "Next Page".ljust(item_w) + "|\n"
+            # When even num of items we add Next page text to a new row when we reach the end
+            if num_items % 2 == 0 and i+2 == num_items:
+                menu_text += "9: Next Page" + " "*(menu_w-12) + "|\n"
+                rows_left -= 1
+
+        # add filler rows if needed
+        for i in range(rows_left):
+            menu_text += " "*menu_w + "|\n"
+
+        # Bottom of menu
+        menu_text += "-"*menu_w + "+"
+
+        custom_scr.scr.addstr(menu_text)
+        selection = None
+        while selection not in [str(i) for i in range(10)]:
+            selection = custom_scr.scr.getkey()
+        if selection == "9":
+            current_page = pages.__next__()
+            continue
+        custom_scr.scr.move(initial_y, initial_x)
+        # an index we can use in obj_symbols_list (from settings) to get character representing selected obj
+        return int(selection) + (9*current_page)
+
+
+
+#if __name__ == "__main__":
+#    from extended_screen import ExtendedScreen
+#    custom_scr = None
+#    obj_names = symbols_list[3:]
+#    display_menu(None, "TEST", obj_names)
+
+#def display_menu(custom_scr):
+#    initial_y, initial_x = custom_scr.scr.getyx()
+#    custom_scr.scr.move(0,0)
+#    menu_text = "OBJECT MENU".center(58) + "|\n"
+#    menu_text += "-"*58 + "|\n"
+#    # We turn it into a list basically just so we can slice it, such that it
+#    # only contains keybinds that correspond to object placements
+#    obj_key_pairs = [[obj_name, key] for obj_name, key in keybinds.items()][20:]
+#    for i, pair in enumerate(obj_key_pairs):
+#        justified_obj_name = pair[0].ljust(18)
+#        justified_keybinds = str(pair[1]).ljust(10)
+#        menu_text += f"{justified_obj_name.title()} {justified_keybinds}"
+#        if i % 2 != 0:
+#            menu_text += "|\n"
+#    # since it's 2 cols, we need to account for if there are an odd number of obj/key pairs
+#    if len(obj_key_pairs) % 2 != 0:
+#        menu_text += "\n"
+#    menu_text += "="*59 + "\n" + " "*59
+#    custom_scr.scr.addstr(menu_text)
+#    custom_scr.scr.move(initial_y, initial_x)
 
 #    menu_text = f"Dash Refresher: {keybinds['dash refresh']} | Checkpoint: {keybinds['checkpoint']}\n"\
 #                f"Shine Block: {keybinds['shine block']} | Bomb Block: {keybinds['bomb block']}\n"\
