@@ -55,7 +55,7 @@ R
 Change Register
 "
 
-Menu
+Object Menu
 m
 
 Dash Refresh

@@ -6,7 +6,7 @@ from write_out import write_out
 from os import path
 from cells_to_grid import return_all_collis_coords, return_obj_coords
 from population import draw_cell_boundaries, populate_screen_cells, set_footer, menu
-from handle_keystrokes import handle_movement, return_designated_char, place_char
+from handle_keystrokes import handle_movement, place_char
 from extended_screen import ExtendedScreen
 from level_object import LevelObject
 from settings import keybinds, movement_keys, symbols, obj_symbols_list
@@ -85,7 +85,7 @@ def main(screen):
             register = custom_scr.scr.getkey()
         elif key in movement_keys:
             handle_movement(custom_scr, grid, key)
-        elif key in keybinds["menu"]:
+        elif key in keybinds["object menu"]:
             curses.curs_set(0)  # Hide cursor while menu is up
             obj_names = [symbol_name for symbol_name in symbols.keys()][3:]
             designated_char_index = menu(custom_scr, "TEST", obj_names)
