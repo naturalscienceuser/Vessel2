@@ -55,15 +55,6 @@ def handle_movement(custom_scr, grid, in_key):
         grid.y_offset += 1
         custom_scr.scr.move(initial_y, initial_x)
 
-def return_designated_char(custom_scr):
-    while True:
-        key_pressed = custom_scr.scr.getkey()
-        if key_pressed in placement_keys:
-            return placement_key_symbols[key_pressed]
-        else:
-            # TODO: print a warning to the user here
-            continue
-
 def place_char(custom_scr, grid, in_char):
     initial_y, initial_x = custom_scr.scr.getyx()
     grid_x, grid_y = to_grid_xy(custom_scr, initial_x, initial_y)
@@ -74,3 +65,14 @@ def place_char(custom_scr, grid, in_char):
             set_cell(custom_scr, grid, in_char)
     except IndexError:  # Tried to place terrain out of bounds
         pass
+
+# NOTE: We can probably get rid of this since menu function changed
+#def return_designated_char(custom_scr):
+#    while True:
+#        key_pressed = custom_scr.scr.getkey()
+#        if key_pressed in placement_keys:
+#            return placement_key_symbols[key_pressed]
+#        else:
+#            # TODO: print a warning to the user here
+#            continue
+
