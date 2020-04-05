@@ -82,19 +82,33 @@ class LevelFile:
         # song 2: 34
         # song 1: 29
         # song 0: 0
+
+        # s_time and shard time are in frames
+        # booleans are 0/1
+        # tileset and playerlife actually correspond to vals in-game
+        # positions are of course in pixels
+        # max_hp is playerlife while starting_hp is startinghp
+        # However changing startinghp seems to do nothing at all
+        
+        # TODO: Next target: goal_x
         option_offsets = {
-            "spawny": 2336, "canwalljump": 2232,
-            "playerlife": 2000, "goaly": 1880,
-            "music": 1780
+            "spawn_y": 2336, "walljump": 2232,
+            "max_hp": 2000, "goal_y": 1880,
+            "music": 1780, "s_time": 1656,
+            "coin_x": 1556, "tileset": 1456,
+            "spawn_x": 1348, "goal_x": 1244,
+            "dark": 1144, "dash": 1028, 
+            "coin_y": 920, "shine": 820,
+            "starting_hp": 708, "shard_time": 588
         }
         offset = option_offsets[option]
         val_bytes = to_file_bytes(val)
         self.mmap_obj[offset:offset+32] = val_bytes
 
-## testing options changes
+# testing options changes
 #if __name__ == "__main__":
-#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/music_0/a.lvl")
-#    test_inst.set_option("music", 0)
+#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/scratch/a.lvl")
+#    test_inst.set_option("starting_hp", 0)
 
 # test clearing stack, seems to work
 #if __name__ == "__main__":
