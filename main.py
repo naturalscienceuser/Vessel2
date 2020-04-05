@@ -5,11 +5,11 @@ from grid import Grid
 from write_out import write_out
 from os import path
 from cells_to_grid import return_all_collis_coords, return_obj_coords
-from population import draw_cell_boundaries, populate_screen_cells, set_footer, display_menu
+from population import draw_cell_boundaries, populate_screen_cells, set_footer, menu
 from handle_keystrokes import handle_movement, return_designated_char, place_char
 from extended_screen import ExtendedScreen
 from level_object import LevelObject
-from settings import keybinds, movement_keys, symbols
+from settings import keybinds, movement_keys, symbols, obj_symbols_list
 from level_file import LevelFile
 import sys
 
@@ -87,8 +87,12 @@ def main(screen):
             handle_movement(custom_scr, grid, key)
         elif key in keybinds["menu"]:
             curses.curs_set(0)  # Hide cursor while menu is up
-            display_menu(custom_scr)
-            designated_char = return_designated_char(custom_scr)
+            obj_names = [symbol_name for symbol_name in symbols.keys()][3:]
+            designated_char_index = menu(custom_scr, "TEST", obj_names)
+            designated_char = obj_symbols_list[designated_char_index]
+            # Old stuff
+            #display_menu(custom_scr)
+            #designated_char = return_designated_char(custom_scr)
             draw_cell_boundaries(custom_scr)
             curses.curs_set(1)  # Show cursor again
         elif key in keybinds["place"]:
