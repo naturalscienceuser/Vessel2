@@ -16,6 +16,7 @@ def write_out(level_file, in_grid):
             try:
                 # KeyError if no obj symbol in grid, in which case we don't insert object
                 obj_double = symbol_doubles[cell]
+                # The below 3 lines could maybe be in except else clause (see docs)
                 level_obj = LevelObject(obj_double, obj_num, i*16, row_num*16)
                 level_file.insert_obj(level_obj)
                 obj_num += 1

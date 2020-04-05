@@ -36,3 +36,7 @@ for loop_count, i in enumerate(range(0, len(keybind_file_lines), 3)):
             placement_keys.append(value)
             placement_key_symbols[value] = symbols_list[symbols_list_index]
         symbols_list_index += 1
+
+
+if __name__ == "__main__":
+    print(str(obj_symbols_list))
