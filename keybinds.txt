@@ -58,6 +58,9 @@ Change Register
 Object Menu
 m
 
+Settings Menu
+o
+
 Dash Refresh
 1
 
