@@ -3,7 +3,7 @@ from conversions import *
 #from settings import keybinds
 #import settings
 from settings import symbols_list
-from curses import error
+from curses import error, curs_set, echo, noecho
 from itertools import cycle
 
 
@@ -85,6 +85,7 @@ def menu(custom_scr, title, items):
     pages = cycle([i for i in range(len(items_by_page))])
     current_page = pages.__next__()
     while True:
+        curs_set(0)  # Hide cursor
         custom_scr.scr.move(0, 0)
         menu_text = title.center(menu_w) + "|\n" + "-"*menu_w + "|\n"
         current_items = items_by_page[current_page]
@@ -120,9 +121,28 @@ def menu(custom_scr, title, items):
             current_page = pages.__next__()
             continue
         custom_scr.scr.move(initial_y, initial_x)
-        # an index we can use in obj_symbols_list (from settings) to get character representing selected obj
-        return int(selection) + (9*current_page)
+        draw_cell_boundaries(custom_scr)
+        curs_set(1)  # Show cursor again
+        # return num of item they selected, so first item on page 2 would be 10 or so, not 0
+        item_num = int(selection) + (9*current_page)
+        #if item_num == something, change prompt?
+        return item_num
 
+
+def prompt(custom_scr, prompt_text="Enter value: "):
+    initial_y, initial_x = custom_scr.scr.getyx()
+    prompt_w = 45
+    custom_scr.scr.move(0, 0)
+    custom_scr.scr.addstr(" "*prompt_w + "|")
+    custom_scr.scr.addstr("\n" + "-"*prompt_w + "+")
+    custom_scr.scr.move(0, 0)
+    custom_scr.scr.addstr(prompt_text)
+    echo()
+    entered_text = custom_scr.scr.getstr()
+    noecho()
+    draw_cell_boundaries(custom_scr)
+    custom_scr.scr.move(initial_y, initial_x)
+    return entered_text
 
 
 #if __name__ == "__main__":
