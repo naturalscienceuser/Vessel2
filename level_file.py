@@ -4,14 +4,48 @@ import mmap
 # NOTE: May be feasible to determine h based off level file size... we at least would need to know the filename though...
 class LevelFile:
     def __init__(self, w, h, file_path):
-        self.col_len_from_min = int(432 * ((h - 288) / 288)) 
         self.h = h
         self.w = w
         self.h_blocks = int(h / 16)
         self.w_blocks = int(w / 16)
+        # How much longer the column is (in chars) compared to minimum size
+        self.col_len_from_min = (self.h_blocks - 18) * 24
+
         raw_offsets = [2880, 50928, 98976, 147024, 195072, 243120, 291168, 339216, 483360]
-        # Account for size of 1st col of collision
-        self.obj_stack_offsets = [raw_offset + self.col_len_from_min for raw_offset in raw_offsets]
+        # Account for size of 1st 2 cols of collision, which occur before objs
+        self.obj_stack_offsets = [offset + (self.col_len_from_min*2) for offset in raw_offsets]
+
+        # s_time and shard time are in frames
+        # booleans are 0/1
+        # tileset and playerlife actually correspond to vals in-game
+        # positions are of course in pixels
+        # max_hp is playerlife while starting_hp is startinghp
+        # However changing startinghp seems to do nothing at all
+
+#        self.option_offsets = {
+#            "spawn_y": 2336, "walljump": 2232,
+#            "max_hp": 2000, "goal_y": 1880,
+#            "music": 1780, "s_time": 1656,
+#            "coin_x": 1556, "tileset": 1456,
+#            "spawn_x": 1348, "goal_x": 1244,
+#            "dark": 1144, "dash": 1028,
+#            "coin_y": 920, "shine": 820,
+#            "starting_hp": 708, "shard_time": 588
+#        }
+
+        raw_setting_offsets = [
+            2336, 2232, 2000, 1880, 1780, 1656, 1556, 1456, 1348, 1244, 1144,
+            1028, 920, 820, 708, 588
+            ]
+
+        self.setting_offsets = [offset + self.col_len_from_min for offset in raw_setting_offsets]
+
+        self.setting_names = [
+            "spawn y", "walljump", "max HP", "goal y", "music", "s time",
+            "coin x", "tileset", "spawn x", "goal x", "dark x", "dash",
+            "coin y", "shine", "starting hp (unimplemented)", "shard time"
+            ]
+
         with open(file_path, "r+b") as f:
             self.mmap_obj = mmap.mmap(f.fileno(), length=0)
 
@@ -53,15 +87,16 @@ class LevelFile:
             offset += stack_offset  # account for obj's pos in stack
             self.mmap_obj[offset:offset+32] = null_bytes
 
-    def return_col_offset(self, col_num):  # used in add_remove_collision
+    def return_col_offset(self, col_num):
         if col_num == 0:
             return 32
         elif col_num == 1:
             return(2376 + self.col_len_from_min)
         else:
-            dist_between_cols = (self.h_blocks + 1) * 24  # +1 to account for the extra zero between cols
+            dist_between_cols = 432 + self.col_len_from_min + 24
             return (531400 + (self.col_len_from_min * 2) + ((col_num - 2) * dist_between_cols))
 
+    # BORKED possibly because of above
     def add_remove_collision(self, xpos, ypos, remove=False):
         if remove:
             bytes_to_add = b"0000000000000000"
@@ -71,37 +106,18 @@ class LevelFile:
         offset = (base_offset) + ypos*24
         self.mmap_obj[offset:offset+16] = bytes_to_add
 
-    def set_option(self, option, val):
-        # MUSIC VALUES
-        # song 8: 125
-        # song 7: 90
-        # song 6: 42
-        # song 5: 40
-        # song 4: 36
-        # song 3: 35
-        # song 2: 34
-        # song 1: 29
-        # song 0: 0
-
-        # s_time and shard time are in frames
-        # booleans are 0/1
-        # tileset and playerlife actually correspond to vals in-game
-        # positions are of course in pixels
-        # max_hp is playerlife while starting_hp is startinghp
-        # However changing startinghp seems to do nothing at all
-        
-        # TODO: Next target: goal_x
-        option_offsets = {
-            "spawn_y": 2336, "walljump": 2232,
-            "max_hp": 2000, "goal_y": 1880,
-            "music": 1780, "s_time": 1656,
-            "coin_x": 1556, "tileset": 1456,
-            "spawn_x": 1348, "goal_x": 1244,
-            "dark": 1144, "dash": 1028, 
-            "coin_y": 920, "shine": 820,
-            "starting_hp": 708, "shard_time": 588
-        }
-        offset = option_offsets[option]
+    def set_option(self, option_num, val):
+        # If music is selected, we need to turn the song number into the
+        # corresponding float. For some reason the levelfile itself doesn't use
+        # 0-8 as vals even though songs are displayed that way, but rather
+        # these seemingly arbitrary values
+        if option_num == 4:
+            music_vals = {
+                "0": 0, "1": 29, "2": 34, "3": 35, "4": 36, "5": 40, "6": 42,
+                "7": 90, "8": 125
+                }
+            val = music_vals[str(val)]
+        offset = self.setting_offsets[option_num]
         val_bytes = to_file_bytes(val)
         self.mmap_obj[offset:offset+32] = val_bytes
 
