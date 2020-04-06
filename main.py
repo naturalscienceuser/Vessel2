@@ -5,7 +5,7 @@ from grid import Grid
 from write_out import write_out
 from os import path
 from cells_to_grid import return_all_collis_coords, return_obj_coords
-from population import draw_cell_boundaries, populate_screen_cells, set_footer, menu
+from population import draw_cell_boundaries, populate_screen_cells, set_footer, menu, prompt
 from handle_keystrokes import handle_movement, place_char
 from extended_screen import ExtendedScreen
 from level_object import LevelObject
@@ -69,34 +69,42 @@ def main(screen):
                 key_index = 0
                 continue
             key_index += 1
+
         if key in keybinds["quit"]:
             break
+
         elif key in keybinds["record"]:
             recording = not recording
             if recording:
                 recorded_keys[register] = []
+
         if(recording and key not in keybinds["record"] 
         and key not in keybinds["change register"]):
             recorded_keys[register].append(key)
+
         elif key in keybinds["playback"]:
             playing_back = True
             continue  # do we need this? alternatively, should they all have continues?
+
         if key in keybinds["change register"]:
             register = custom_scr.scr.getkey()
+
         elif key in movement_keys:
             handle_movement(custom_scr, grid, key)
+
+        elif key in keybinds["settings menu"]:
+            item_num = menu(custom_scr, "SETTINGS", level_file.setting_names)  # maybe make the menu function figure out the labels based on title?
+            val_for_option = int(prompt(custom_scr))
+            level_file.set_option(item_num, val_for_option)
+
         elif key in keybinds["object menu"]:
-            curses.curs_set(0)  # Hide cursor while menu is up
             obj_names = [symbol_name for symbol_name in symbols.keys()][3:]
-            designated_char_index = menu(custom_scr, "TEST", obj_names)
+            designated_char_index = menu(custom_scr, "OBJECT MENU", obj_names)
             designated_char = obj_symbols_list[designated_char_index]
-            # Old stuff
-            #display_menu(custom_scr)
-            #designated_char = return_designated_char(custom_scr)
-            draw_cell_boundaries(custom_scr)
-            curses.curs_set(1)  # Show cursor again
+
         elif key in keybinds["place"]:
             place_char(custom_scr, grid, designated_char)
+
         set_footer(custom_scr, grid, recording, register)
         if not playing_back:  # Whether or not we have this if here is really a matter of taste
             populate_screen_cells(custom_scr, grid)

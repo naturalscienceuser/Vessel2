@@ -3,7 +3,6 @@ from offsets import return_col_offset
 from conversions import to_double
 from settings import double_symbols
 
-# TODO: Finish writing this function (It's done?)
 def return_obj_coords(level_file):
     # There are 1000 objects in a stack/at max it seems
     obj_table_offset = level_file.obj_stack_offsets[0]
@@ -26,24 +25,29 @@ def return_obj_coords(level_file):
             pass
     return coords
 
-def return_col_collis_coords(level_file, col_num):
-    offset = level_file.return_col_offset(col_num)
-    col_end = offset + (24 * level_file.h_blocks)
-    coords = []
-    cell_y = 0
-    for i in range(offset, col_end, 24):
-        if level_file.mmap_obj[i:i+16] == b"000000000000F03F":
-            coords.append([col_num, cell_y])
-        cell_y += 1
-    return coords
-
 def return_all_collis_coords(level_file):
+
+    def return_col_collis_coords(level_file, col_num):
+        offset = level_file.return_col_offset(col_num)
+        col_end = offset + (24 * level_file.h_blocks)
+        coords = []
+        cell_y = 0
+        for i in range(offset, col_end, 24):
+            if level_file.mmap_obj[i:i+16] == b"000000000000F03F":
+                coords.append([col_num, cell_y])
+            cell_y += 1
+        return coords
+
     ground_coords = []
     for col in range(level_file.w_blocks):
         col_coords = return_col_collis_coords(level_file, col)
         for coordset in col_coords:
             ground_coords.append(coordset)
     return ground_coords
+
+def return_spawn_coords(level_file):
+    pass
+
 
 if __name__ == "__main__":
     from level_file import LevelFile
