@@ -1,7 +1,6 @@
 import mmap
 from settings import symbols, symbol_doubles
 from level_object import LevelObject
-from add_remove_collision import add_remove_collision
 
 full_val = symbols["collision"]
 empty_val = symbols["empty space"]
