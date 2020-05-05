@@ -1,13 +1,20 @@
-from conversions import to_file_bytes, to_double
+from conversions import to_file_bytes, to_double, to_int
 import mmap
 
 # NOTE: May be feasible to determine h based off level file size... we at least would need to know the filename though...
 class LevelFile:
-    def __init__(self, w, h, file_path):
-        self.h = h
-        self.w = w
-        self.h_blocks = int(h / 16)
-        self.w_blocks = int(w / 16)
+    def __init__(self, file_path):
+        with open(file_path, "r+b") as f:
+            self.mmap_obj = mmap.mmap(f.fileno(), length=0)
+
+        w_bytes = self.mmap_obj[8:16]  # 40030000
+        h_bytes = self.mmap_obj[16:24]  # C3010000 
+        self.w_blocks = to_int(w_bytes)
+        # I don't know why, but the file always says height is 1 larger than the game says it is
+        self.h_blocks = to_int(h_bytes) - 1
+        self.w = self.w_blocks * 16
+        self.h = self.h_blocks * 16
+
         # How much longer the column is (in chars) compared to minimum size
         self.col_len_from_min = (self.h_blocks - 18) * 24
 
@@ -22,17 +29,6 @@ class LevelFile:
         # max_hp is playerlife while starting_hp is startinghp
         # However changing startinghp seems to do nothing at all
 
-#        self.option_offsets = {
-#            "spawn_y": 2336, "walljump": 2232,
-#            "max_hp": 2000, "goal_y": 1880,
-#            "music": 1780, "s_time": 1656,
-#            "coin_x": 1556, "tileset": 1456,
-#            "spawn_x": 1348, "goal_x": 1244,
-#            "dark": 1144, "dash": 1028,
-#            "coin_y": 920, "shine": 820,
-#            "starting_hp": 708, "shard_time": 588
-#        }
-
         raw_setting_offsets = [
             2336, 2232, 2000, 1880, 1780, 1656, 1556, 1456, 1348, 1244, 1144,
             1028, 920, 820, 708, 588
@@ -46,8 +42,9 @@ class LevelFile:
             "coin y", "shine", "starting hp (unimplemented)", "shard time"
             ]
 
-        with open(file_path, "r+b") as f:
-            self.mmap_obj = mmap.mmap(f.fileno(), length=0)
+        self.spawn_coords = self.return_spawn_coords()
+        self.goal_coords = self.return_goal_coords()
+        self.coin_coords = self.return_coin_coords()
 
     def clear_stacks(self):
         stack_len = 48000
@@ -87,6 +84,7 @@ class LevelFile:
             offset += stack_offset  # account for obj's pos in stack
             self.mmap_obj[offset:offset+32] = null_bytes
 
+    # Could this be an inner function somewhere too?
     def return_col_offset(self, col_num):
         if col_num == 0:
             return 32
@@ -96,7 +94,6 @@ class LevelFile:
             dist_between_cols = 432 + self.col_len_from_min + 24
             return (531400 + (self.col_len_from_min * 2) + ((col_num - 2) * dist_between_cols))
 
-    # BORKED possibly because of above
     def add_remove_collision(self, xpos, ypos, remove=False):
         if remove:
             bytes_to_add = b"0000000000000000"
@@ -121,10 +118,37 @@ class LevelFile:
         val_bytes = to_file_bytes(val)
         self.mmap_obj[offset:offset+32] = val_bytes
 
-# testing options changes
+        if option_num in (0, 8):
+            self.spawn_coords = self.return_spawn_coords()
+        elif option_num in (3, 9):
+            self.goal_coords = self.return_goal_coords()
+        elif option_num in (6, 12):
+            self.coin_coords = self.return_coin_coords()
+
+
+    def get_option(self, option_num):
+        offset = self.setting_offsets[option_num]
+        val_bytes = self.mmap_obj[offset:offset+32]
+        val = to_double(val_bytes, inner_table=True)
+        return val
+
+    def return_spawn_coords(self):
+        return [int(self.get_option(8)/16), int(self.get_option(0)/16)]
+
+    def return_goal_coords(self):
+        return [int(self.get_option(9)/16), int(self.get_option(3)/16)]
+
+    def return_coin_coords(self):
+        return [int(self.get_option(6)/16), int(self.get_option(12)/16)]
+
+
+if __name__ == "__main__":
+    test_inst = LevelFile(13312, 7200, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/13312_7200/a.lvl")
+
+## Testing get option
 #if __name__ == "__main__":
-#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/scratch/a.lvl")
-#    test_inst.set_option("starting_hp", 0)
+#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/512_288/a.lvl")
+#    print(test_inst.get_option(0))
 
 # test clearing stack, seems to work
 #if __name__ == "__main__":
