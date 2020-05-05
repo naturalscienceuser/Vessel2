@@ -2,6 +2,20 @@ import codecs
 import binascii
 import struct
 
+# currently just used for the level reader
+def to_int(in_str, byte_order="little"):
+    if type(in_str) == type(b""):
+        in_str = in_str.decode()
+
+    def flip_bytes(in_str):
+        sbytes = [in_str[i]+in_str[i+1] for i in range(0, len(in_str), 2)]
+        sbytes.reverse()
+        return "".join(sbytes)
+
+    if byte_order == "little":
+        in_str = flip_bytes(in_str)
+    return int(in_str, 16)
+
 def to_screen_xy(custom_scr, cell_x_to_convert, cell_y_to_convert):
     new_x = cell_x_to_convert * custom_scr.cell_w + (custom_scr.cell_w / 2)
     new_y = cell_y_to_convert * custom_scr.cell_h + 1
