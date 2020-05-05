@@ -8,6 +8,7 @@ class ExtendedScreen:
         self.cell_bottom = cell_bottom
         self.cell_w = len(cell_top)
         self.cell_h = 2
+        # TODO: Get rid of below 3, we can just import from settings
         self.full_val = full_val
         self.empty_val = empty_val
         self.oob_val = oob_val

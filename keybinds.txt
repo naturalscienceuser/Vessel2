@@ -23,22 +23,22 @@ Shift Down
 KEY_DOWN
 
 Row Start
-s
+^
 
 Row Middle
-C
+%
 
 Row End
-e
+$
 
 Column Start
-S
+H
 
 Column Middle
 M
 
 Column End
-E
+L
 
 Place
 c
@@ -60,6 +60,9 @@ m
 
 Settings Menu
 o
+
+Collision Mode
+C
 
 Dash Refresh
 1
