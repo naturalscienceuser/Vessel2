@@ -1,6 +1,6 @@
-from movement import *
-from settings import keybinds, placement_keys, placement_key_symbols
-from conversions import *
+from movement import shift_cursor, move_to_row_pos, move_to_col_pos
+from settings import keybinds, placement_keys, placement_key_symbols, symbols
+from conversions import to_grid_xy
 from population import set_cell
 import sys
 
@@ -59,20 +59,11 @@ def place_char(custom_scr, grid, in_char):
     initial_y, initial_x = custom_scr.scr.getyx()
     grid_x, grid_y = to_grid_xy(custom_scr, initial_x, initial_y)
     try:
-        if grid.get_point(grid_x + grid.x_offset, grid_y + grid.y_offset) == in_char:
-            set_cell(custom_scr, grid, custom_scr.empty_val)
-        else:
+        symbol_at_pt = grid.get_point(grid_x + grid.x_offset, grid_y + grid.y_offset)
+        if symbol_at_pt == in_char:
+            set_cell(custom_scr, grid, symbols["empty space"])
+        # Can't place over coin, goal, or spawn
+        elif symbol_at_pt not in (symbols["spawn"], symbols["goal"], symbols["coin"]):
             set_cell(custom_scr, grid, in_char)
     except IndexError:  # Tried to place terrain out of bounds
         pass
-
-# NOTE: We can probably get rid of this since menu function changed
-#def return_designated_char(custom_scr):
-#    while True:
-#        key_pressed = custom_scr.scr.getkey()
-#        if key_pressed in placement_keys:
-#            return placement_key_symbols[key_pressed]
-#        else:
-#            # TODO: print a warning to the user here
-#            continue
-
