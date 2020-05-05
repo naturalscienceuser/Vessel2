@@ -1,9 +1,9 @@
 import mmap
 from offsets import return_col_offset
 from conversions import to_double
-from settings import double_symbols
+from settings import double_symbols, symbols
 
-def return_obj_coords(level_file):
+def set_obj_cells(level_file, grid):
     # There are 1000 objects in a stack/at max it seems
     obj_table_offset = level_file.obj_stack_offsets[0]
     obj_stack_end = obj_table_offset + (1000 * 48)  # based on looking, 1000 seems to be right
@@ -23,9 +23,12 @@ def return_obj_coords(level_file):
             coords.append([int(x_pos/16), int(y_pos/16), symbol])
         except KeyError:
             pass
-    return coords
+    
+    for coordset in coords:
+        grid.set_point(coordset[0], coordset[1], coordset[2])
 
-def return_all_collis_coords(level_file):
+
+def set_collis_cells(level_file, grid):
 
     def return_col_collis_coords(level_file, col_num):
         offset = level_file.return_col_offset(col_num)
@@ -43,10 +46,31 @@ def return_all_collis_coords(level_file):
         col_coords = return_col_collis_coords(level_file, col)
         for coordset in col_coords:
             ground_coords.append(coordset)
-    return ground_coords
 
-def return_spawn_coords(level_file):
-    pass
+    for coordset in ground_coords:
+        grid.set_point(coordset[0], coordset[1], symbols["collision"])
+
+
+#def return_spawn_coords(level_file):
+#    return [int(level_file.get_option(8)/16), int(level_file.get_option(0)/16)]
+#
+#def return_goal_coords(level_file):
+#    return [int(level_file.get_option(9)/16), int(level_file.get_option(3)/16)]
+#
+#def return_coin_coords(level_file):
+#    return [int(level_file.get_option(6)/16), int(level_file.get_option(12)/16)]
+
+#def set_spawn_coords(level_file, grid):
+#    spawn_coords = return_spawn_coords(level_file)
+#    grid.set_point(spawn_coords[0], spawn_coords[1], symbols["spawn"])
+#
+#def set_goal_coords(level_file, grid):
+#    goal_coords = [int(level_file.get_option(9)/16), int(level_file.get_option(3)/16)]
+#    grid.set_point(goal_coords[0], goal_coords[1], symbols["goal"])
+#
+#def set_coin_coords(level_file, grid):
+#    coin_coords = [int(level_file.get_option(6)/16), int(level_file.get_option(12)/16)]
+#    grid.set_point(coin_coords[0], coin_coords[1], symbols["coin"])
 
 
 if __name__ == "__main__":
