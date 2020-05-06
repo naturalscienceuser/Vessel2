@@ -48,18 +48,19 @@ def populate_screen_cells(custom_scr, grid):
     custom_scr.scr.move(initial_y, initial_x)
 
 
-def set_footer(custom_scr, grid, recording=False, reg="\""):
+def set_footer(custom_scr, grid, recording=False, reg="\"", lower_text=""):
     initial_y, initial_x = custom_scr.scr.getyx()
     grid_x, grid_y = to_grid_xy(custom_scr)
     display_x = grid_x + grid.x_offset
     display_y = grid_y + grid.y_offset
     # if not menu
-    display_str = f"({display_x}, {display_y})".ljust(10)
+    display_str = f"({display_x}, {display_y})".ljust(15)
     display_str += f" reg: {reg} "
     if recording:
         display_str += "recording"
     else:
         display_str += " " * len("recording")
+    display_str += f"\n{lower_text}".ljust(31)  # len if all properties are 3 digits
     custom_scr.scr.addstr(custom_scr.screen_h - 2, 0, display_str)
     custom_scr.scr.move(initial_y, initial_x)
 

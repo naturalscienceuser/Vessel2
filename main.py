@@ -1,6 +1,4 @@
-import curses
 from curses import wrapper
-import mmap
 from grid import Grid
 from write_out import write_out
 from os import path
@@ -8,7 +6,6 @@ from cells_to_grid import set_obj_cells, set_collis_cells#, return_spawn_coords,
 from population import draw_cell_boundaries, populate_screen_cells, set_footer, menu, prompt, set_cell
 from handle_keystrokes import handle_movement, toggle_cell_contents
 from extended_screen import ExtendedScreen
-from level_object import LevelObject
 from settings import keybinds, movement_keys, symbols, obj_symbols_list, obj_names
 from level_file import LevelFile
 from conversions import to_grid_xy
@@ -123,29 +120,33 @@ def main(screen):
         elif key in keybinds["collision mode"]:
             designated_char = symbols["collision"]
 
-        elif key in keybinds["position"]:
+        grid_x, grid_y = to_grid_xy(custom_scr)
+        cell_contents = grid.get_point(grid_x, grid_y)
+
+        if key in keybinds["position"]:
             # x and y offsets should be 0-16
             x_offset = prompt(custom_scr, prompt_text="Enter x: ").decode()
             y_offset = prompt(custom_scr, prompt_text="Enter y: ").decode()
-            grid_x, grid_y = to_grid_xy(custom_scr)  # current pos by default
-            cell_contents = grid.get_point(grid_x, grid_y)
+#            grid_x, grid_y = to_grid_xy(custom_scr)  # current pos by default
+#            cell_contents = grid.get_point(grid_x, grid_y)
             icon, properties = cell_contents[0], cell_contents[5:]
-            new_val = f"{icon},{x_offset},{y_offset},{properties}"
-            set_cell(custom_scr, grid, new_val) 
+            cell_contents = f"{icon},{x_offset},{y_offset},{properties}"
+            set_cell(custom_scr, grid, cell_contents) 
 
         elif key in keybinds["properties"]:
-            grid_x, grid_y = to_grid_xy(custom_scr)
-            cell_contents = grid.get_point(grid_x, grid_y)
+#            grid_x, grid_y = to_grid_xy(custom_scr)
+#            cell_contents = grid.get_point(grid_x, grid_y)
             icon, offsets = cell_contents[0], cell_contents[2:5]
             properties = []
             for i in range(1, 7):
                 property_val = prompt(custom_scr, prompt_text=f"Enter property {str(i)}: ").decode()
                 properties.append(property_val)
             properties_str = ",".join(properties)
-            new_val = f"{icon},{offsets},{properties_str}"
-            set_cell(custom_scr, grid, new_val)
+            cell_contents = f"{icon},{offsets},{properties_str}"
+            set_cell(custom_scr, grid, cell_contents)
 
-        set_footer(custom_scr, grid, recording, register)
+        set_footer(custom_scr, grid, recording, register, cell_contents[2:])
+
         if not playing_back:  # Whether or not we have this if here is really a matter of taste
             populate_screen_cells(custom_scr, grid)
             custom_scr.scr.refresh()
