@@ -12,18 +12,19 @@ def write_out(level_file, in_grid):
         obj_num = in_obj_num
         for i, cell_val in enumerate(row):
             try:
-                cell_symbol, cell_offset = cell_val[0], cell_val[1:]
-                if cell_offset != "":
-                    x_offset, y_offset = cell_offset.split(",")
-                    x_offset, y_offset = int(x_offset), int(y_offset)
-                else:
-                    x_offset = y_offset = 0
+                cell_symbol, cell_data = cell_val[0], cell_val[2:].split(",")
+
                 # KeyError if no obj symbol in grid, in which case we don't insert object
+                # The below lines could maybe be in except else clause (see docs)
                 obj_double = symbol_doubles[cell_symbol]
-                # The below 3 lines could maybe be in except else clause (see docs)
-                level_obj = LevelObject(obj_double, obj_num, (i*16) + x_offset, (row_num*16) + y_offset)
+
+                x_offset, y_offset = int(cell_data[0]), int(cell_data[1])
+                additional_data = [int(data) for data in cell_data[2:]]
+
+                level_obj = LevelObject(obj_double, obj_num, (i*16) + x_offset, (row_num*16) + y_offset, additional_data)
                 level_file.insert_obj(level_obj)
                 obj_num += 1
+
             except KeyError:
                 if cell_symbol == full_val:
                     remove = False

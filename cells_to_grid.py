@@ -1,5 +1,3 @@
-import mmap
-from offsets import return_col_offset
 from conversions import to_double
 from settings import double_symbols, symbols
 
@@ -11,16 +9,33 @@ def set_obj_cells(level_file, grid):
     for offset in range(obj_table_offset, obj_stack_end, 48):  # putting obj_stack_end may leave us off by 1?
         bytes_text = level_file.mmap_obj[offset:offset+32].decode()
         obj_double = to_double(bytes_text, "little", True)
-        try:
+        try:  # again, use else?
             symbol = double_symbols[obj_double]  # causes KeyError if no object
             offset_from_stack_start = offset - obj_table_offset
+
             x_stack_offset = level_file.obj_stack_offsets[1] + offset_from_stack_start
             x_pos_bytes = level_file.mmap_obj[x_stack_offset:x_stack_offset+32]
-            x_pos = to_double(x_pos_bytes, "little", True)
+            raw_x_pos = to_double(x_pos_bytes, "little", True)
+            x_offset = int(raw_x_pos % 16)
+            x_pos = raw_x_pos - x_offset
+
             y_stack_offset = level_file.obj_stack_offsets[2] + offset_from_stack_start
             y_pos_bytes = level_file.mmap_obj[y_stack_offset:y_stack_offset+32]
-            y_pos = to_double(y_pos_bytes, "little", True)
-            coords.append([int(x_pos/16), int(y_pos/16), symbol])
+            raw_y_pos = to_double(y_pos_bytes, "little", True)
+            y_offset = int(raw_y_pos % 16)
+            y_pos = raw_y_pos - y_offset
+
+            additional_data_list = []
+            for stack_offset in level_file.obj_stack_offsets[3:]:
+                data_bytes = level_file.mmap_obj[stack_offset:stack_offset+32]
+                data_num = to_double(data_bytes, "little", True)
+                additional_data_list.append(int(data_num))
+            additional_data_list = [str(data) for data in additional_data_list]
+            additional_data = ",".join(additional_data_list)
+            cell_contents = f"{symbol},{x_offset},{y_offset},{additional_data}"
+
+            coords.append([int(x_pos/16), int(y_pos/16), cell_contents])
+
         except KeyError:
             pass
     
@@ -71,9 +86,3 @@ def set_collis_cells(level_file, grid):
 #def set_coin_coords(level_file, grid):
 #    coin_coords = [int(level_file.get_option(6)/16), int(level_file.get_option(12)/16)]
 #    grid.set_point(coin_coords[0], coin_coords[1], symbols["coin"])
-
-
-if __name__ == "__main__":
-    from level_file import LevelFile
-    level_file = LevelFile(512, 288, "a.lvl")
-    print(return_obj_coords(level_file))

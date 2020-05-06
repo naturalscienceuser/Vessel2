@@ -55,12 +55,12 @@ def handle_movement(custom_scr, grid, in_key):
         grid.y_offset += 1
         custom_scr.scr.move(initial_y, initial_x)
 
-def place_char(custom_scr, grid, in_char):
+def toggle_cell_contents(custom_scr, grid, in_char):
     initial_y, initial_x = custom_scr.scr.getyx()
     grid_x, grid_y = to_grid_xy(custom_scr, initial_x, initial_y)
     try:
-        symbol_at_pt = grid.get_point(grid_x + grid.x_offset, grid_y + grid.y_offset)
-        if symbol_at_pt == in_char:
+        symbol_at_pt = grid.get_point(grid_x + grid.x_offset, grid_y + grid.y_offset)[0]
+        if symbol_at_pt == in_char[0]:
             set_cell(custom_scr, grid, symbols["empty space"])
         # Can't place over coin, goal, or spawn
         elif symbol_at_pt not in (symbols["spawn"], symbols["goal"], symbols["coin"]):
