@@ -1,8 +1,8 @@
-from movement import *
-from conversions import *
+from movement import shift_cursor, move_to_row_pos, move_to_column_1
+from conversions import to_grid_xy, to_screen_xy
 #from settings import keybinds
 #import settings
-from settings import symbols_list
+#from settings import symbols_list
 from curses import error, curs_set, echo, noecho
 from itertools import cycle
 
@@ -33,7 +33,8 @@ def populate_screen_cells(custom_scr, grid):
             try:
                 if col + grid.x_offset < 0 or in_row_num + grid.y_offset < 0:
                     raise IndexError  # Coordinates are negative, ergo oob
-                custom_scr.scr.addstr(grid.get_point(col + grid.x_offset, in_row_num + grid.y_offset))
+                # [0] gets us the symbol without the pixel offset attached to it
+                custom_scr.scr.addstr(grid.get_point(col + grid.x_offset, in_row_num + grid.y_offset)[0])
             except IndexError:  # Occurs if coordinates are negative or larger than grid size
                 custom_scr.scr.addstr(custom_scr.oob_val)
             shift_cursor(custom_scr, "right", custom_scr.cell_w - 1)
@@ -69,7 +70,8 @@ def set_cell(custom_scr, grid, in_val, cell_x=None, cell_y=None):
         screen_y, screen_x = custom_scr.scr.getyx()
     else:
         screen_x, screen_y = to_screen_xy(custom_scr, cell_x, cell_y) 
-    custom_scr.scr.addstr(screen_y, screen_x, in_val) 
+    # [0] avoids displaying pixel offset
+    custom_scr.scr.addstr(screen_y, screen_x, in_val[0])
     grid_x, grid_y = to_grid_xy(custom_scr, screen_x, screen_y)
     grid_x += grid.x_offset
     grid_y += grid.y_offset

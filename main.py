@@ -11,6 +11,7 @@ from extended_screen import ExtendedScreen
 from level_object import LevelObject
 from settings import keybinds, movement_keys, symbols, obj_symbols_list, obj_names
 from level_file import LevelFile
+from conversions import to_grid_xy
 import sys
 
 def log_var(in_var):
@@ -114,7 +115,19 @@ def main(screen):
             designated_char = obj_symbols_list[designated_char_index]
 
         elif key in keybinds["place"]:
-            place_char(custom_scr, grid, designated_char)
+            place_char(custom_scr, grid, designated_char + "0,0")
+
+        elif key in keybinds["collision mode"]:
+            designated_char = symbols["collision"]
+
+        elif key in keybinds["position"]:
+            # x and y offsets should be -8 thru 8
+            x_offset = prompt(custom_scr, prompt_text="Enter x: ").decode()
+            y_offset = prompt(custom_scr, prompt_text="Enter y: ").decode()
+            grid_x, grid_y = to_grid_xy(custom_scr)  # current pos by default
+            icon = grid.get_point(grid_x, grid_y)[0]
+            new_val = f"{icon}{x_offset},{y_offset}"
+            place_char(custom_scr, grid, new_val)
 
         set_footer(custom_scr, grid, recording, register)
         if not playing_back:  # Whether or not we have this if here is really a matter of taste

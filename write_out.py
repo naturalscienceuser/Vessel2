@@ -1,4 +1,3 @@
-import mmap
 from settings import symbols, symbol_doubles
 from level_object import LevelObject
 
@@ -11,18 +10,24 @@ def write_out(level_file, in_grid):
     def write_row(level_file, in_grid, row_num, in_obj_num=0):
         row = in_grid.array[row_num]
         obj_num = in_obj_num
-        for i, cell in enumerate(row):
+        for i, cell_val in enumerate(row):
             try:
+                cell_symbol, cell_offset = cell_val[0], cell_val[1:]
+                if cell_offset != "":
+                    x_offset, y_offset = cell_offset.split(",")
+                    x_offset, y_offset = int(x_offset), int(y_offset)
+                else:
+                    x_offset = y_offset = 0
                 # KeyError if no obj symbol in grid, in which case we don't insert object
-                obj_double = symbol_doubles[cell]
+                obj_double = symbol_doubles[cell_symbol]
                 # The below 3 lines could maybe be in except else clause (see docs)
-                level_obj = LevelObject(obj_double, obj_num, i*16, row_num*16)
+                level_obj = LevelObject(obj_double, obj_num, (i*16) + x_offset, (row_num*16) + y_offset)
                 level_file.insert_obj(level_obj)
                 obj_num += 1
             except KeyError:
-                if cell == full_val:
+                if cell_symbol == full_val:
                     remove = False
-                elif cell == empty_val:
+                elif cell_symbol == empty_val:
                     remove = True
                 level_file.add_remove_collision(i, row_num, remove)
                 obj_stack_offset = level_file.return_obj_stack_offset(i*16, row_num*16)
