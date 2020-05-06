@@ -32,10 +32,11 @@ for loop_count, i in enumerate(range(0, len(keybind_file_lines), 3)):
     if loop_count < 14:
         for value in values:
             movement_keys.append(value)
-    elif loop_count > 22:  # If we add something between placement keys and movement keys, increment this by 3
-        for value in values:
-            placement_keys.append(value)
-            placement_key_symbols[value] = symbols_list[symbols_list_index]
+#    We have the object menu so we no longer need this stuff I think
+#    elif loop_count > 22:  # If we add something between placement keys and movement keys, increment this by 3
+#        for value in values:
+#            placement_keys.append(value)
+#            placement_key_symbols[value] = symbols_list[symbols_list_index]
         symbols_list_index += 1
 
 
