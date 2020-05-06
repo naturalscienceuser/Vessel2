@@ -64,36 +64,5 @@ o
 Collision Mode
 C
 
-Dash Refresh
-1
-
-Checkpoint
-2
-
-Shine Block
-3
-
-Bomb Block
-4
-
-Metal Block
-5
-
-Fuse
-6
-
-Jump Pad
-7
-
-Ice Block
-8
-
-Blue Switch Block
-9
-
-Red Switch Block
-0
-
-Dark Block
--
-
+Position
+p
