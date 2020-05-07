@@ -81,8 +81,8 @@ def set_cell(custom_scr, grid, in_val, cell_x=None, cell_y=None):
 
 
 def menu(custom_scr, title, items):
-    menu_w = 45
-    item_w = 18
+    menu_w = 51
+    item_w = 21
     initial_y, initial_x = custom_scr.scr.getyx()
     items_by_page = [items[i:i+9] for i in range(0, len(items), 9)]
     pages = cycle([i for i in range(len(items_by_page))])

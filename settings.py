@@ -1,5 +1,3 @@
-import sys
-
 with open("keybinds.txt", "r") as f, open("env.txt", "r") as e:
     keybind_file_lines = [line.rstrip("\n") for line in f.readlines()]
     symbol_file_lines = [line.rstrip("\n") for line in e.readlines()]
@@ -13,7 +11,12 @@ for i in range(0, len(symbol_file_lines), 3):
     symbols_list.append(value)
 
 # So to add symbols, it would appear that we would need to add the double to the end of the list, and then add the symbol to the end of env file
-symbol_doubles_list = [1.0, 50.0, 4.0, 5.0, 6.0, 10.0, 9.0, 12.0, 211.0, 210.0, 22.0]
+symbol_doubles_list = [
+    1.0, 50.0, 4.0, 5.0, 6.0, 10.0, 9.0, 12.0, 211.0, 210.0, 22.0, 0.0, 2.0,
+    3.0, 7.0, 8.0, 11.0, 21.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 201.0,
+    202.0, 203.0, 204.0, 209.0, 212.0, 205.0, 206.0, 207.0, 208.0, 213.0, 214.0
+    ]
+
 objs_start = 6
 obj_symbols_list = symbols_list[objs_start:]
 obj_names = [symbol_name for symbol_name in symbols.keys()][objs_start:]
