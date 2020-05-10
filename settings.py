@@ -1,4 +1,4 @@
-with open("keybinds.txt", "r") as f, open("env.txt", "r") as e:
+with open("keybinds.txt", "r") as f, open("symbols.txt", "r") as e:
     keybind_file_lines = [line.rstrip("\n") for line in f.readlines()]
     symbol_file_lines = [line.rstrip("\n") for line in e.readlines()]
 
