@@ -1,3 +1,4 @@
+import sys
 """
 Get the symbols and keybinds and arrange them in dicts so we can look them up
 as needed in other files. Making a list of movement keys is also helpful to 
@@ -15,6 +16,11 @@ for i in range(0, len(symbol_file_lines), 3):
     value = symbol_file_lines[i+1]
     symbols[symbol_name] = value
     symbols_list.append(value)
+
+for symbol in symbols_list:
+    if symbols_list.count(symbol) > 1:
+        print("Duplicate symbols in symbols.txt; exiting")
+        sys.exit()
 
 # So to add symbols, it would appear that we would need to add the double to the end of the list, and then add the symbol to the end of symbols file
 symbol_doubles_list = [
@@ -41,4 +47,4 @@ for loop_count, i in enumerate(range(0, len(keybind_file_lines), 3)):
 
 
 if __name__ == "__main__":
-    print(str(symbol_doubles))
+    print(str(symbols_list))
