@@ -1,5 +1,5 @@
 from movement import shift_cursor, move_to_row_pos, move_to_col_pos
-from settings import keybinds, placement_keys, placement_key_symbols, symbols
+from settings import keybinds, symbols
 from conversions import to_grid_xy
 from population import set_cell
 import sys

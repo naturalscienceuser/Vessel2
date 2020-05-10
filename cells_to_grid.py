@@ -1,7 +1,19 @@
 from conversions import to_double
 from settings import double_symbols, symbols
 
+"""
+These functions set cells of the Grid object based on preexisting objects and
+collision.
+"""
+
 def set_obj_cells(level_file, grid):
+    """
+    I alluded to this in main.py, but when objects are placed on the
+    grid we include not only their corresponding symbol, but also 8 numbers
+    separated by commas which represent x offset, y offset, and the 6 additional
+    properties (size, rotation, all that). So this function determines those
+    properties in addition to the cell and type of the object and adds those
+    """
     # There are 1000 objects in a stack/at max it seems
     obj_table_offset = level_file.obj_stack_offsets[0]
     obj_stack_end = obj_table_offset + (1000 * 48)  # based on looking, 1000 seems to be right
@@ -11,6 +23,9 @@ def set_obj_cells(level_file, grid):
         obj_double = to_double(bytes_text, "little", True)
         try:  # again, use else?
             symbol = double_symbols[obj_double]  # causes KeyError if no object
+        except KeyError:
+            pass
+        else:
             offset_from_stack_start = offset - obj_table_offset
 
             x_stack_offset = level_file.obj_stack_offsets[1] + offset_from_stack_start
@@ -33,11 +48,7 @@ def set_obj_cells(level_file, grid):
             additional_data_list = [str(data) for data in additional_data_list]
             additional_data = ",".join(additional_data_list)
             cell_contents = f"{symbol},{x_offset},{y_offset},{additional_data}"
-
             coords.append([int(x_pos/16), int(y_pos/16), cell_contents])
-
-        except KeyError:
-            pass
     
     for coordset in coords:
         grid.set_point(coordset[0], coordset[1], coordset[2])

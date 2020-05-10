@@ -25,12 +25,6 @@ grid = Grid(level_file.w_blocks, level_file.h_blocks)
 # Fill up the grid
 set_collis_cells(level_file, grid)
 set_obj_cells(level_file, grid)
-# Below 3 are not set the same way because we have to keep track of their
-# positions so that when they change positions and we go to remove wherever
-# they were previously, we actually know where they were previously
-#spawn_coords = return_spawn_coords(level_file)
-#goal_coords = return_goal_coords(level_file)
-#coin_coords = return_coin_coords(level_file)
 grid.set_point(level_file.spawn_coords[0], level_file.spawn_coords[1], symbols["spawn"])
 grid.set_point(level_file.goal_coords[0], level_file.goal_coords[1], symbols["goal"])
 grid.set_point(level_file.coin_coords[0], level_file.coin_coords[1], symbols["coin"])
@@ -43,7 +37,10 @@ level_file.clear_stacks()
 cell_top_str = "+---"
 cell_bottom_str = "| " + symbols["empty space"] + " "
 
-custom_scr = ExtendedScreen(cell_top_str, cell_bottom_str, symbols["empty space"], symbols["collision"], symbols["out of bounds"])
+custom_scr = ExtendedScreen(
+        cell_top_str, cell_bottom_str, symbols["empty space"], 
+        symbols["collision"], symbols["out of bounds"]
+        )
 
 def main(screen):
     draw_cell_boundaries(custom_scr)
@@ -113,6 +110,8 @@ def main(screen):
 
         elif key in keybinds["place"]:
             data = ""
+            # If placing an object, add these numbers to represent x and y
+            # offset followed by its 6 additional properties
             if designated_char not in symbols["collision"]:
                 data = ",0,0,1,0,0,0,0,1"
             toggle_cell_contents(custom_scr, grid, designated_char + data)
@@ -124,18 +123,14 @@ def main(screen):
         cell_contents = grid.get_point(grid_x, grid_y)
 
         if key in keybinds["position"]:
-            # x and y offsets should be 0-16
+            # x and y offsets should be 0-8
             x_offset = prompt(custom_scr, prompt_text="Enter x: ").decode()
             y_offset = prompt(custom_scr, prompt_text="Enter y: ").decode()
-#            grid_x, grid_y = to_grid_xy(custom_scr)  # current pos by default
-#            cell_contents = grid.get_point(grid_x, grid_y)
             icon, properties = cell_contents[0], cell_contents[5:]
             cell_contents = f"{icon},{x_offset},{y_offset},{properties}"
             set_cell(custom_scr, grid, cell_contents) 
 
         elif key in keybinds["properties"]:
-#            grid_x, grid_y = to_grid_xy(custom_scr)
-#            cell_contents = grid.get_point(grid_x, grid_y)
             icon, offsets = cell_contents[0], cell_contents[2:5]
             properties = []
             for i in range(1, 7):

@@ -1,14 +1,13 @@
 from conversions import to_file_bytes, to_double, to_int
 import mmap
 
-# NOTE: May be feasible to determine h based off level file size... we at least would need to know the filename though...
 class LevelFile:
     def __init__(self, file_path):
         with open(file_path, "r+b") as f:
             self.mmap_obj = mmap.mmap(f.fileno(), length=0)
 
-        w_bytes = self.mmap_obj[8:16]  # 40030000
-        h_bytes = self.mmap_obj[16:24]  # C3010000 
+        w_bytes = self.mmap_obj[8:16]
+        h_bytes = self.mmap_obj[16:24]
         self.w_blocks = to_int(w_bytes)
         # I don't know why, but the file always says height is 1 larger than the game says it is
         self.h_blocks = to_int(h_bytes) - 1
