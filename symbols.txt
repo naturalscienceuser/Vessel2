@@ -116,7 +116,7 @@ Or Decider
 +
 
 Xor Decider
-x
+X
 
 Player Detector
 O

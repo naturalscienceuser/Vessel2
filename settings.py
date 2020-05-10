@@ -41,4 +41,4 @@ for loop_count, i in enumerate(range(0, len(keybind_file_lines), 3)):
 
 
 if __name__ == "__main__":
-    print(str(symbols))
+    print(str(symbol_doubles))
