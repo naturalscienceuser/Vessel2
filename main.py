@@ -89,7 +89,7 @@ def main(screen):
             handle_movement(custom_scr, grid, key)
 
         elif key in keybinds["settings menu"]:
-            change_settings(custom_scr, level_file)
+            change_settings(custom_scr, grid, level_file)
 
         elif key in keybinds["object menu"]:
             designated_char_index = menu(custom_scr, "OBJECT MENU", obj_names)

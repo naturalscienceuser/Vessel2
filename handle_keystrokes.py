@@ -51,7 +51,7 @@ def handle_movement(custom_scr, grid, in_key):
         grid.y_offset += 1
         custom_scr.scr.move(initial_y, initial_x)
 
-def change_settings(custom_scr, level_file):
+def change_settings(custom_scr, grid, level_file):
     item_num = menu(custom_scr, "SETTINGS", level_file.setting_names)
     val_for_option = int(prompt(custom_scr))
     previous_spawn, previous_goal, previous_coin = \
