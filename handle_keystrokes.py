@@ -84,3 +84,10 @@ def change_settings(custom_scr, level_file):
         grid.set_point(previous_coin[0], previous_coin[1], symbols["empty space"])
         grid.set_point(level_file.coin_coords[0], level_file.coin_coords[1], symbols["coin"])
 
+def change_obj_offset(custom_scr, grid, cell_contents):
+    x_offset = prompt(custom_scr, prompt_text="Enter x: ").decode()
+    y_offset = prompt(custom_scr, prompt_text="Enter y: ").decode()
+    icon, properties = cell_contents[0], cell_contents[6:]
+    cell_contents = f"{icon},{x_offset},{y_offset},{properties}"
+    set_cell(custom_scr, grid, cell_contents) 
+
