@@ -4,10 +4,6 @@ from conversions import to_grid_xy
 from display import set_cell, menu, prompt
 import sys
 
-def log_var(in_var):
-    with open("test.txt", "w") as f:
-        print(in_var, file=f)
-
 def handle_movement(custom_scr, grid, in_key):
     initial_y, initial_x = custom_scr.scr.getyx()
     if in_key in keybinds["column start"]:
@@ -104,7 +100,10 @@ def place_obj_or_collis(custom_scr, grid, designated_char, cell_contents):
         data = ",0,0,1,0,0,0,0,1"
 
     def is_changeable(in_char):
-        return in_char not in (symbols["spawn"], symbols["goal"], symbols["coin"])
+        return in_char not in (
+                symbols["spawn"], symbols["goal"], 
+                symbols["coin"], symbols["out of bounds"]
+                )
 
     try:
         if cell_contents[0] == designated_char:

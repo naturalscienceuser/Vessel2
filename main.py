@@ -99,7 +99,10 @@ def main(screen):
             designated_char = symbols["collision"]
 
         grid_x, grid_y = to_grid_xy(custom_scr)
-        cell_contents = grid.get_point(grid_x + grid.x_offset, grid_y + grid.y_offset)
+        try:
+            cell_contents = grid.get_point(grid_x + grid.x_offset, grid_y + grid.y_offset)
+        except IndexError:
+            cell_contents = symbols["out of bounds"]
 
         if key in keybinds["place"]:
             place_obj_or_collis(custom_scr, grid, designated_char, cell_contents)
