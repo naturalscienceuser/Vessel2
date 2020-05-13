@@ -1,11 +1,11 @@
 from movement import shift_cursor, move_to_row_pos, move_to_column_1
 from conversions import to_grid_xy, to_screen_xy
-#from settings import keybinds
-#import settings
-#from settings import symbols_list
 from curses import error, curs_set, echo, noecho
 from itertools import cycle
 
+"""
+Functons for displaying text, including cells, icons, and prompts/menus
+"""
 
 def draw_cell_boundaries(custom_scr):
     initial_y, initial_x = custom_scr.scr.getyx()
@@ -81,6 +81,11 @@ def set_cell(custom_scr, grid, in_val, cell_x=None, cell_y=None):
 
 
 def menu(custom_scr, title, items):
+    """
+    Display menu and return number of item the user selected, accounting for
+    page number (so selecting the first item on page 2 would cause this to
+    return 10, not 0)
+    """
     menu_w = 51
     item_w = 21
     initial_y, initial_x = custom_scr.scr.getyx()
@@ -126,7 +131,6 @@ def menu(custom_scr, title, items):
         custom_scr.scr.move(initial_y, initial_x)
         draw_cell_boundaries(custom_scr)
         curs_set(1)  # Show cursor again
-        # return num of item they selected, so first item on page 2 would be 10 or so, not 0
         item_num = int(selection) + (9*current_page)
         #if item_num == something, change prompt?
         return item_num

@@ -3,7 +3,7 @@ from grid import Grid
 from write_out import write_out
 from os import path
 from cells_to_grid import set_obj_cells, set_collis_cells#, return_spawn_coords, return_goal_coords, return_coin_coords
-from population import draw_cell_boundaries, populate_screen_cells, set_footer, menu, prompt, set_cell
+from display import draw_cell_boundaries, populate_screen_cells, set_footer, menu, prompt, set_cell
 from handle_keystrokes import handle_movement, change_settings, change_obj_offset, change_obj_properties, place_obj_or_collis
 from extended_screen import ExtendedScreen
 from settings import keybinds, movement_keys, symbols, obj_symbols_list, obj_names

@@ -1,7 +1,7 @@
 from movement import shift_cursor, move_to_row_pos, move_to_col_pos
 from settings import keybinds, symbols
 from conversions import to_grid_xy
-from population import set_cell, menu, prompt
+from display import set_cell, menu, prompt
 import sys
 
 def log_var(in_var):
