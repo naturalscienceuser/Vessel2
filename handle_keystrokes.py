@@ -91,3 +91,13 @@ def change_obj_offset(custom_scr, grid, cell_contents):
     cell_contents = f"{icon},{x_offset},{y_offset},{properties}"
     set_cell(custom_scr, grid, cell_contents) 
 
+def change_obj_properties(custom_scr, grid, cell_contents):
+    icon, offsets = cell_contents[0], cell_contents[2:5]
+    properties = []
+    for i in range(1, 7):
+        property_val = prompt(custom_scr, prompt_text=f"Enter property {str(i)}: ").decode()
+        properties.append(property_val)
+    properties_str = ",".join(properties)
+    cell_contents = f"{icon},{offsets},{properties_str}"
+    set_cell(custom_scr, grid, cell_contents)
+

@@ -4,7 +4,7 @@ from write_out import write_out
 from os import path
 from cells_to_grid import set_obj_cells, set_collis_cells#, return_spawn_coords, return_goal_coords, return_coin_coords
 from population import draw_cell_boundaries, populate_screen_cells, set_footer, menu, prompt, set_cell
-from handle_keystrokes import handle_movement, toggle_cell_contents, change_settings, change_obj_offset
+from handle_keystrokes import handle_movement, toggle_cell_contents, change_settings, change_obj_offset, change_obj_properties
 from extended_screen import ExtendedScreen
 from settings import keybinds, movement_keys, symbols, obj_symbols_list, obj_names
 from level_file import LevelFile
@@ -113,14 +113,7 @@ def main(screen):
             change_obj_offset(custom_scr, grid, cell_contents)
 
         elif key in keybinds["properties"]:
-            icon, offsets = cell_contents[0], cell_contents[2:5]
-            properties = []
-            for i in range(1, 7):
-                property_val = prompt(custom_scr, prompt_text=f"Enter property {str(i)}: ").decode()
-                properties.append(property_val)
-            properties_str = ",".join(properties)
-            cell_contents = f"{icon},{offsets},{properties_str}"
-            set_cell(custom_scr, grid, cell_contents)
+            change_obj_properties(custom_scr, grid, cell_contents)
 
         set_footer(custom_scr, grid, recording, register, cell_contents[2:])
 
