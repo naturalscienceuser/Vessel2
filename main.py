@@ -4,7 +4,7 @@ from write_out import write_out
 from os import path
 from cells_to_grid import set_obj_cells, set_collis_cells#, return_spawn_coords, return_goal_coords, return_coin_coords
 from population import draw_cell_boundaries, populate_screen_cells, set_footer, menu, prompt, set_cell
-from handle_keystrokes import handle_movement, toggle_cell_contents
+from handle_keystrokes import handle_movement, toggle_cell_contents, change_settings
 from extended_screen import ExtendedScreen
 from settings import keybinds, movement_keys, symbols, obj_symbols_list, obj_names
 from level_file import LevelFile
@@ -89,20 +89,7 @@ def main(screen):
             handle_movement(custom_scr, grid, key)
 
         elif key in keybinds["settings menu"]:
-            item_num = menu(custom_scr, "SETTINGS", level_file.setting_names)
-            val_for_option = int(prompt(custom_scr))
-            previous_spawn, previous_goal, previous_coin = \
-                    level_file.spawn_coords, level_file.goal_coords, level_file.coin_coords
-            level_file.set_option(item_num, val_for_option)
-            if item_num in (0, 8):
-                grid.set_point(previous_spawn[0], previous_spawn[1], symbols["empty space"])
-                grid.set_point(level_file.spawn_coords[0], level_file.spawn_coords[1], symbols["spawn"])
-            elif item_num in (3, 9):
-                grid.set_point(previous_goal[0], previous_goal[1], symbols["empty space"])
-                grid.set_point(level_file.goal_coords[0], level_file.goal_coords[1], symbols["goal"])
-            elif item_num in (6, 12):
-                grid.set_point(previous_coin[0], previous_coin[1], symbols["empty space"])
-                grid.set_point(level_file.coin_coords[0], level_file.coin_coords[1], symbols["coin"])
+            change_settings(custom_scr, level_file)
 
         elif key in keybinds["object menu"]:
             designated_char_index = menu(custom_scr, "OBJECT MENU", obj_names)

@@ -1,7 +1,7 @@
 from movement import shift_cursor, move_to_row_pos, move_to_col_pos
 from settings import keybinds, symbols
 from conversions import to_grid_xy
-from population import set_cell
+from population import set_cell, menu, prompt
 import sys
 
 def log_var(in_var):
@@ -67,3 +67,20 @@ def toggle_cell_contents(custom_scr, grid, in_char):
             set_cell(custom_scr, grid, in_char)
     except IndexError:  # Tried to place terrain out of bounds
         pass
+
+def change_settings(custom_scr, level_file):
+    item_num = menu(custom_scr, "SETTINGS", level_file.setting_names)
+    val_for_option = int(prompt(custom_scr))
+    previous_spawn, previous_goal, previous_coin = \
+            level_file.spawn_coords, level_file.goal_coords, level_file.coin_coords
+    level_file.set_option(item_num, val_for_option)
+    if item_num in (0, 8):
+        grid.set_point(previous_spawn[0], previous_spawn[1], symbols["empty space"])
+        grid.set_point(level_file.spawn_coords[0], level_file.spawn_coords[1], symbols["spawn"])
+    elif item_num in (3, 9):
+        grid.set_point(previous_goal[0], previous_goal[1], symbols["empty space"])
+        grid.set_point(level_file.goal_coords[0], level_file.goal_coords[1], symbols["goal"])
+    elif item_num in (6, 12):
+        grid.set_point(previous_coin[0], previous_coin[1], symbols["empty space"])
+        grid.set_point(level_file.coin_coords[0], level_file.coin_coords[1], symbols["coin"])
+
