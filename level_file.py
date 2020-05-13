@@ -9,17 +9,34 @@ class LevelFile:
         w_bytes = self.mmap_obj[8:16]
         h_bytes = self.mmap_obj[16:24]
         self.w_blocks = to_int(w_bytes)
-        # I don't know why, but the file always says height is 1 larger than the game says it is
+        # I don't know why, but the file always says height is 1 larger than
+        # the game does (is it that mystery zero again?)
         self.h_blocks = to_int(h_bytes) - 1
         self.w = self.w_blocks * 16
         self.h = self.h_blocks * 16
 
+        # The amount of file length contributed by collision (+1 is for the
+        # mysterious extra 0 at the end of every row)
+        collis_space = self.w_blocks * (self.h_blocks+1) * 24
+        len_1_char_name = collis_space + 530480  # file len w 1 char name
+        self.len_from_1_char = len(self.mmap_obj) - len_1_char_name
+
         # How much longer the column is (in chars) compared to minimum size
         self.col_len_from_min = (self.h_blocks - 18) * 24
 
-        raw_offsets = [2880, 50928, 98976, 147024, 195072, 243120, 291168, 339216, 483360]
+        raw_offsets = [
+                2880, 50928, 98976, 147024, 195072, 243120, 291168, 339216,
+                483360
+                ]
         # Account for size of 1st 2 cols of collision, which occur before objs
-        self.obj_stack_offsets = [offset + (self.col_len_from_min*2) for offset in raw_offsets]
+        obj_stack_offsets_1_char_name = [
+                offset + (self.col_len_from_min*2) for offset in raw_offsets
+                ]
+        # Account for len of filename
+        self.obj_stack_offsets = [
+                offset + self.len_from_1_char 
+                for offset in obj_stack_offsets_1_char_name
+                ]
 
         # s_time and shard time are in frames
         # booleans are 0/1
@@ -33,7 +50,16 @@ class LevelFile:
             1028, 920, 820, 708, 588
             ]
 
-        self.setting_offsets = [offset + self.col_len_from_min for offset in raw_setting_offsets]
+        # Account for offset caused by col len (since 1 collision col is above)
+        setting_offsets_1_char_name = [
+                offset + self.col_len_from_min
+                for offset in raw_setting_offsets
+                ]
+
+        # Account for offset caused by name len
+        setting_offsets_1_char_name[0] += self.len_from_1_char
+        setting_offsets_1_char_name[1] += self.len_from_1_char
+        self.setting_offsets = setting_offsets_1_char_name
 
         self.setting_names = [
             "spawn y", "walljump", "max HP", "goal y", "music", "s time",
@@ -88,10 +114,10 @@ class LevelFile:
         if col_num == 0:
             return 32
         elif col_num == 1:
-            return(2376 + self.col_len_from_min)
+            return(2376 + self.col_len_from_min) + self.len_from_1_char
         else:
-            dist_between_cols = 432 + self.col_len_from_min + 24
-            return (531400 + (self.col_len_from_min * 2) + ((col_num - 2) * dist_between_cols))
+            dist_between_cols = (432 + self.col_len_from_min + 24)
+            return (531400 + (self.col_len_from_min * 2) + ((col_num - 2) * dist_between_cols)) + self.len_from_1_char
 
     def add_remove_collision(self, xpos, ypos, remove=False):
         if remove:
@@ -100,6 +126,7 @@ class LevelFile:
             bytes_to_add = b"000000000000F03F"
         base_offset = self.return_col_offset(xpos)
         offset = (base_offset) + ypos*24
+        print(f"{xpos=} {ypos=} {offset=}")
         self.mmap_obj[offset:offset+16] = bytes_to_add
 
     def set_option(self, option_num, val):
@@ -142,81 +169,6 @@ class LevelFile:
 
 
 if __name__ == "__main__":
-    test_inst = LevelFile(13312, 7200, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/13312_7200/a.lvl")
-
-## Testing get option
-#if __name__ == "__main__":
-#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/512_288/a.lvl")
-#    print(test_inst.get_option(0))
-
-# test clearing stack, seems to work
-#if __name__ == "__main__":
-#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/fragmented/a.lvl")
-#    test_inst.clear_stack()
-
-# test changing obj type, seems to work
-#if __name__ == "__main__":
-#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/fragmented/a.lvl")
-#    test_inst.set_obj_type(6, 0, 0)
-
-## test return_num_objs
-#if __name__ == "__main__":
-#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/fragmented/a.lvl")
-#    test_inst.return_num_objs()
-
-## test defragmenting stack
-#if __name__ == "__main__":
-#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/fragmented/a.lvl")
-
-# Removal seems to work now
-#if __name__ == "__main__":
-#    test_inst = LevelFile(512, 288, "/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/512_288/a.lvl")
-#    print(test_inst.return_obj_stack_offset(0, 0))
-#    test_inst.remove_obj(0)
-
-#def return_num_objs(self):
-#    """Return number of objects in file. Can break if stacks are not defragmented"""
-#    num_objs = 0
-#    for obj_stack_offset in range(self.obj_stack_offsets[0], self.obj_stack_offsets[1], 48):
-#        double = to_double(self.mmap_obj[obj_stack_offset:obj_stack_offset+32], inner_table=True)
-#        if double == -1:
-#            break
-#        num_objs += 1
-#    return num_objs
-
-#def defragment_stacks(self):
-#    """
-#    When an object is deleted, it may leave a "gap" of -1 in the stack in between other objects
-#    thus we run this function at initialization to effectively remove those gaps, placing
-#    everything at the top of each stack. We do this by splitting the stack into chunks
-#    of len 48 (including a double and type num), removing the pairs that are -1, and
-#    then adding -1 to that list until it comes out to the same length as before the -1s
-#    were removed
-#
-#    BUT ACTUALLY I think we could have just completely cleared the stack and it would make
-#    Absolutely 0 difference--everything just gets overwritten in write_out() anyway
-#    """
-#    # Type number 0 (int) and double -1
-#    null_bytes = b"303030303030303030303030303030303030303046304246"
-#    # from start of 1st val in stack to start of last val is 480(48)? chars (pretty sure it's just 48000 after looking at obj and x stack)
-#    stack_len = 48000
-#    for stack_pos in self.obj_stack_offsets:
-#        stack_pos -= 16  # Usually we start after the 5A02 but this time we include it
-#        stack = self.mmap_obj[stack_pos:stack_pos+stack_len]
-#        doubles_in_stack = stack_len / 48  # 1000
-#        # split on every 48 chars, so each type_num + double pair
-#        stack_segments = [stack[i:i+48] for i in range(0, len(stack), 48)]
-#        segments_not_null = [segment for segment in stack_segments if segment != null_bytes]
-#        # append null_bytes until you get the right length
-#        segments_not_null.extend([null_bytes]*int((doubles_in_stack-len(segments_not_null))))
-#        defragmented_segments = segments_not_null  # Basically just renaming it
-#        defragmented_stack = b"".join(defragmented_segments)
-#        self.mmap_obj[stack_pos:stack_pos+stack_len] = defragmented_stack
-#
-
-#def set_obj_type(self, in_double, x_pix, y_pix):
-#    stack_pos_offset = self.return_obj_stack_offset(x_pix, y_pix)
-#    stack_pos = self.obj_stack_offsets[0] + stack_pos_offset
-#    double_bytes = to_file_bytes(in_double, inner_table = True)
-#    self.mmap_obj[stack_pos:stack_pos+32] = double_bytes
+    test_inst = LevelFile("/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/bb/bb.lvl")
+    print(test_inst.return_col_offset(2))
 
