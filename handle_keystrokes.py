@@ -55,19 +55,6 @@ def handle_movement(custom_scr, grid, in_key):
         grid.y_offset += 1
         custom_scr.scr.move(initial_y, initial_x)
 
-def toggle_cell_contents(custom_scr, grid, in_char):
-    initial_y, initial_x = custom_scr.scr.getyx()
-    grid_x, grid_y = to_grid_xy(custom_scr, initial_x, initial_y)
-    try:
-        symbol_at_pt = grid.get_point(grid_x + grid.x_offset, grid_y + grid.y_offset)[0]
-        if symbol_at_pt == in_char[0]:
-            set_cell(custom_scr, grid, symbols["empty space"])
-        # Can't place over coin, goal, or spawn
-        elif symbol_at_pt not in (symbols["spawn"], symbols["goal"], symbols["coin"]):
-            set_cell(custom_scr, grid, in_char)
-    except IndexError:  # Tried to place terrain out of bounds
-        pass
-
 def change_settings(custom_scr, level_file):
     item_num = menu(custom_scr, "SETTINGS", level_file.setting_names)
     val_for_option = int(prompt(custom_scr))
@@ -85,6 +72,10 @@ def change_settings(custom_scr, level_file):
         grid.set_point(level_file.coin_coords[0], level_file.coin_coords[1], symbols["coin"])
 
 def change_obj_offset(custom_scr, grid, cell_contents):
+    """
+    cell_contents is literally the contents of the cell in the grid object
+    under the cursor, eg. m,0,0,1,0,0,0,0,1
+    """
     x_offset = prompt(custom_scr, prompt_text="Enter x: ").decode()
     y_offset = prompt(custom_scr, prompt_text="Enter y: ").decode()
     icon, properties = cell_contents[0], cell_contents[6:]
@@ -92,6 +83,10 @@ def change_obj_offset(custom_scr, grid, cell_contents):
     set_cell(custom_scr, grid, cell_contents) 
 
 def change_obj_properties(custom_scr, grid, cell_contents):
+    """
+    cell_contents is literally the contents of the cell in the grid object
+    under the cursor, eg. m,0,0,1,0,0,0,0,1
+    """
     icon, offsets = cell_contents[0], cell_contents[2:5]
     properties = []
     for i in range(1, 7):
@@ -100,4 +95,22 @@ def change_obj_properties(custom_scr, grid, cell_contents):
     properties_str = ",".join(properties)
     cell_contents = f"{icon},{offsets},{properties_str}"
     set_cell(custom_scr, grid, cell_contents)
+
+def place_obj_or_collis(custom_scr, grid, designated_char, cell_contents):
+    data = ""
+    # If placing an object, add these numbers to represent x and y
+    # offset followed by its 6 additional properties
+    if designated_char not in symbols["collision"]:
+        data = ",0,0,1,0,0,0,0,1"
+
+    def is_changeable(in_char):
+        return in_char not in (symbols["spawn"], symbols["goal"], symbols["coin"])
+
+    try:
+        if cell_contents[0] == designated_char:
+            set_cell(custom_scr, grid, symbols["empty space"])
+        elif is_changeable(cell_contents[0]):
+            set_cell(custom_scr, grid, designated_char + data)
+    except IndexError:  # Tried to place terrain out of bounds
+        pass
 

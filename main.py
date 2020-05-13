@@ -4,7 +4,7 @@ from write_out import write_out
 from os import path
 from cells_to_grid import set_obj_cells, set_collis_cells#, return_spawn_coords, return_goal_coords, return_coin_coords
 from population import draw_cell_boundaries, populate_screen_cells, set_footer, menu, prompt, set_cell
-from handle_keystrokes import handle_movement, toggle_cell_contents, change_settings, change_obj_offset, change_obj_properties
+from handle_keystrokes import handle_movement, change_settings, change_obj_offset, change_obj_properties, place_obj_or_collis
 from extended_screen import ExtendedScreen
 from settings import keybinds, movement_keys, symbols, obj_symbols_list, obj_names
 from level_file import LevelFile
@@ -95,19 +95,14 @@ def main(screen):
             designated_char_index = menu(custom_scr, "OBJECT MENU", obj_names)
             designated_char = obj_symbols_list[designated_char_index]
 
-        elif key in keybinds["place"]:
-            data = ""
-            # If placing an object, add these numbers to represent x and y
-            # offset followed by its 6 additional properties
-            if designated_char not in symbols["collision"]:
-                data = ",0,0,1,0,0,0,0,1"
-            toggle_cell_contents(custom_scr, grid, designated_char + data)
-
         elif key in keybinds["collision mode"]:
             designated_char = symbols["collision"]
 
         grid_x, grid_y = to_grid_xy(custom_scr)
-        cell_contents = grid.get_point(grid_x, grid_y)
+        cell_contents = grid.get_point(grid_x + grid.x_offset, grid_y + grid.y_offset)
+
+        if key in keybinds["place"]:
+            place_obj_or_collis(custom_scr, grid, designated_char, cell_contents)
 
         if key in keybinds["position"]:
             change_obj_offset(custom_scr, grid, cell_contents)
