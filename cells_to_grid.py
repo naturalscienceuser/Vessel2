@@ -14,11 +14,11 @@ def set_obj_cells(level_file, grid):
     properties (size, rotation, all that). So this function determines those
     properties in addition to the cell and type of the object and adds those
     """
-    # There are 1000 objects in a stack/at max it seems
-    obj_table_offset = level_file.obj_stack_offsets[0]
-    obj_stack_end = obj_table_offset + (1000 * 48)  # based on looking, 1000 seems to be right
+    # There are 1000 objects in a group/at max it seems
+    obj_table_offset = level_file.obj_group_offsets[0]
+    obj_group_end = obj_table_offset + (1000 * 48)  # based on looking, 1000 seems to be right
     coords = []
-    for offset in range(obj_table_offset, obj_stack_end, 48):  # putting obj_stack_end may leave us off by 1?
+    for offset in range(obj_table_offset, obj_group_end, 48):  # putting obj_group_end may leave us off by 1?
         bytes_text = level_file.mmap_obj[offset:offset+32].decode()
         obj_double = to_double(bytes_text, "little", True)
         try:  # again, use else?
@@ -26,23 +26,23 @@ def set_obj_cells(level_file, grid):
         except KeyError:
             pass
         else:
-            offset_from_stack_start = offset - obj_table_offset
+            offset_from_group_start = offset - obj_table_offset
 
-            x_stack_offset = level_file.obj_stack_offsets[1] + offset_from_stack_start
-            x_pos_bytes = level_file.mmap_obj[x_stack_offset:x_stack_offset+32]
+            x_group_offset = level_file.obj_group_offsets[1] + offset_from_group_start
+            x_pos_bytes = level_file.mmap_obj[x_group_offset:x_group_offset+32]
             raw_x_pos = to_double(x_pos_bytes, "little", True)
             x_offset = int(raw_x_pos % 16)
             x_pos = raw_x_pos - x_offset
 
-            y_stack_offset = level_file.obj_stack_offsets[2] + offset_from_stack_start
-            y_pos_bytes = level_file.mmap_obj[y_stack_offset:y_stack_offset+32]
+            y_group_offset = level_file.obj_group_offsets[2] + offset_from_group_start
+            y_pos_bytes = level_file.mmap_obj[y_group_offset:y_group_offset+32]
             raw_y_pos = to_double(y_pos_bytes, "little", True)
             y_offset = int(raw_y_pos % 16)
             y_pos = raw_y_pos - y_offset
 
             additional_data_list = []
-            for stack_offset in level_file.obj_stack_offsets[3:]:
-                data_bytes = level_file.mmap_obj[stack_offset:stack_offset+32]
+            for group_offset in level_file.obj_group_offsets[3:]:
+                data_bytes = level_file.mmap_obj[group_offset:group_offset+32]
                 data_num = to_double(data_bytes, "little", True)
                 additional_data_list.append(int(data_num))
             additional_data_list = [str(data) for data in additional_data_list]

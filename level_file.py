@@ -6,6 +6,7 @@ class LevelFile:
         with open(file_path, "r+b") as f:
             self.mmap_obj = mmap.mmap(f.fileno(), length=0)
 
+        self.file_path = file_path
         w_bytes = self.mmap_obj[8:16]
         h_bytes = self.mmap_obj[16:24]
         self.w_blocks = to_int(w_bytes)
@@ -14,6 +15,7 @@ class LevelFile:
         self.h_blocks = to_int(h_bytes) - 1
         self.w = self.w_blocks * 16
         self.h = self.h_blocks * 16
+        self.new_name = None
 
         # The amount of file length contributed by collision (+1 is for the
         # mysterious extra 0 at the end of every row)
@@ -29,13 +31,13 @@ class LevelFile:
                 483360
                 ]
         # Account for size of 1st 2 cols of collision, which occur before objs
-        obj_stack_offsets_1_char_name = [
+        obj_group_offsets_1_char_name = [
                 offset + (self.col_len_from_min*2) for offset in raw_offsets
                 ]
         # Account for len of filename
-        self.obj_stack_offsets = [
-                offset + self.len_from_1_char 
-                for offset in obj_stack_offsets_1_char_name
+        self.obj_group_offsets = [
+                offset + self.len_from_1_char
+                for offset in obj_group_offsets_1_char_name
                 ]
 
         # s_time and shard time are in frames
@@ -71,42 +73,42 @@ class LevelFile:
         self.goal_coords = self.return_goal_coords()
         self.coin_coords = self.return_coin_coords()
 
-    def clear_stacks(self):
-        stack_len = 48000
-        for stack_pos in self.obj_stack_offsets:
-            stack_start = stack_pos - 16
-            for pair_start in range(stack_start, stack_start+stack_len, 48):  # pair of double and type number
+    def clear_groups(self):
+        group_len = 48000
+        for group_pos in self.obj_group_offsets:
+            group_start = group_pos - 16
+            for pair_start in range(group_start, group_start+group_len, 48):  # pair of double and type number
                 # Weird bytes below represent int 0 plus double -1, so -1 and its type number
                 self.mmap_obj[pair_start:pair_start+48] = b"303030303030303030303030303030303030303046304246"
             
     def insert_obj(self, level_obj):
         doubles_to_insert = [level_obj.obj_id, level_obj.x_pixels, level_obj.y_pixels] \
                             + level_obj.additional_data
-        stack_pos_offset = 48 * level_obj.obj_num
-        offsets = [offset + stack_pos_offset for offset in self.obj_stack_offsets]
+        group_pos_offset = 48 * level_obj.obj_num
+        offsets = [offset + group_pos_offset for offset in self.obj_group_offsets]
         for offset, double_to_insert in zip(offsets, doubles_to_insert):
             bytes_to_insert = to_file_bytes(double_to_insert)
             self.mmap_obj[offset:offset+32] = bytes_to_insert
 
     # NOTE: Maybe combine this method with remove_obj, since I think it is only used for that
-    def return_obj_stack_offset(self, x_pos_to_check, y_pos_to_check):
-        """Calculate offset from 1st item in stack"""
+    def return_obj_group_offset(self, x_pos_to_check, y_pos_to_check):
+        """Calculate offset from 1st item in group"""
         # 48 is derived from size of double + int, since there is a type number before the double
-        for x_stack_offset, y_stack_offset in zip(range(self.obj_stack_offsets[1], self.obj_stack_offsets[2], 48), 
-                                                  range(self.obj_stack_offsets[2], self.obj_stack_offsets[3], 48)):
-            x_hex = self.mmap_obj[x_stack_offset:x_stack_offset+32]
-            y_hex = self.mmap_obj[y_stack_offset:y_stack_offset+32]
+        for x_group_offset, y_group_offset in zip(range(self.obj_group_offsets[1], self.obj_group_offsets[2], 48), 
+                                                  range(self.obj_group_offsets[2], self.obj_group_offsets[3], 48)):
+            x_hex = self.mmap_obj[x_group_offset:x_group_offset+32]
+            y_hex = self.mmap_obj[y_group_offset:y_group_offset+32]
             x_val_at_offset = to_double(x_hex, inner_table=True)
             y_val_at_offset = to_double(y_hex, inner_table=True)
             if (x_val_at_offset, y_val_at_offset) == (x_pos_to_check, y_pos_to_check):
-                # We could have used y stack or whatever to calculate the offset from first item in stack, chose x_stack arbitrarily
-                return x_stack_offset - self.obj_stack_offsets[1]
+                # We could have used y group or whatever to calculate the offset from first item in group, chose x_group arbitrarily
+                return x_group_offset - self.obj_group_offsets[1]
         return None  # In this case there is no object
 
-    def remove_obj(self, stack_offset):
+    def remove_obj(self, group_offset):
         null_bytes = to_file_bytes(-1.0)
-        for offset in self.obj_stack_offsets:
-            offset += stack_offset  # account for obj's pos in stack
+        for offset in self.obj_group_offsets:
+            offset += group_offset  # account for obj's pos in group
             self.mmap_obj[offset:offset+32] = null_bytes
 
     # Could this be an inner function somewhere too?
@@ -126,7 +128,6 @@ class LevelFile:
             bytes_to_add = b"000000000000F03F"
         base_offset = self.return_col_offset(xpos)
         offset = (base_offset) + ypos*24
-        print(f"{xpos=} {ypos=} {offset=}")
         self.mmap_obj[offset:offset+16] = bytes_to_add
 
     def set_option(self, option_num, val):
@@ -169,6 +170,6 @@ class LevelFile:
 
 
 if __name__ == "__main__":
-    test_inst = LevelFile("/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/bb/bb.lvl")
-    print(test_inst.return_col_offset(2))
-
+    test_inst = LevelFile("/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/113_45_goal/a.lvl")
+    #print(test_inst.setting_offsets[3])
+    print(f"{test_inst.col_len_from_min=}")

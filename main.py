@@ -2,7 +2,7 @@ from curses import wrapper
 from grid import Grid
 from write_out import write_out
 from os import path
-from cells_to_grid import set_obj_cells, set_collis_cells#, return_spawn_coords, return_goal_coords, return_coin_coords
+from cells_to_grid import set_obj_cells, set_collis_cells
 from display import draw_cell_boundaries, populate_screen_cells, set_footer, menu, prompt, set_cell
 from handle_keystrokes import handle_movement, change_settings, change_obj_offset, change_obj_properties, place_obj_or_collis
 from extended_screen import ExtendedScreen
@@ -29,10 +29,10 @@ grid.set_point(level_file.spawn_coords[0], level_file.spawn_coords[1], symbols["
 grid.set_point(level_file.goal_coords[0], level_file.goal_coords[1], symbols["goal"])
 grid.set_point(level_file.coin_coords[0], level_file.coin_coords[1], symbols["coin"])
 
-# Now that we know prior coords, we can clear stacks of level file. Previous objects are in grid, so
+# Now that we know prior coords, we can clear groups of level file. Previous objects are in grid, so
 # They will be written back out anyway. This way the write_out() function does not have to know anything
 # about prior objects, it just writes out everything that was in the grid. That makes it easier to code.
-level_file.clear_stacks()
+level_file.clear_groups()
 
 cell_top_str = "+---"
 cell_bottom_str = "| " + symbols["empty space"] + " "
@@ -97,6 +97,9 @@ def main(screen):
 
         elif key in keybinds["collision mode"]:
             designated_char = symbols["collision"]
+
+        elif key in keybinds["rename"]:
+            level_file.new_name = prompt(custom_scr, "Enter a new name: ")
 
         grid_x, grid_y = to_grid_xy(custom_scr)
         try:

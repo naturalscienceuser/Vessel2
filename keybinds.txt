@@ -69,3 +69,6 @@ p
 
 Properties
 P
+
+Rename
+n

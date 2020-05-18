@@ -2,7 +2,7 @@ class LevelObject:
     def __init__(self, obj_id, obj_num, x_pixels, y_pixels, additional_data=None):
         self.obj_id = obj_id
         self.obj_num = obj_num
-        self.stack_offset = obj_num * 48
+        self.group_offset = obj_num * 48
         self.x_pixels = x_pixels
         self.y_pixels = y_pixels
         self.x_blocks = x_pixels / 16
