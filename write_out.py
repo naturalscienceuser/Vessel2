@@ -1,5 +1,6 @@
 from settings import symbols, symbol_doubles
 from level_object import LevelObject
+from codecs import decode
 
 full_val = symbols["collision"]
 empty_val = symbols["empty space"]
@@ -41,37 +42,46 @@ def write_out(level_file, in_grid):
     for i in range(len(in_grid.array)):
         total_obj_num = write_row(level_file, in_grid, i, total_obj_num)
 
-# TODO: This doesn't work, no idea why not
-#    # Change name last if necessary, since that means we don't have to 
-#    # recalculate all the offsets
-#    if level_file.new_name is None:
-#        return
-#
-#    def delete_from_str(in_str, start, end):
-#        return in_str[:start] + in_str[end:]
-#
-#    def insert_into_str(in_str, text_to_insert, location):
-#        before, after = in_str[:location], in_str[location:]
-#        return before + text_to_insert + after
-#
-#    def file_bytes_to_str(in_bytes):
-#        hex_as_hex = decode(in_bytes, "hex")
-#        return decode(hex_as_hex, "hex")
-#
-#    def str_to_file_bytes(in_str):
-#        str_as_hex = "".join("{:02x}".format(ord(char)) for char in in_str)
-#        return "".join("{:02x}".format(ord(char)) for char in str_as_hex)
-#
-#    file_text = level_file.mmap_obj.read()
-#    level_file.mmap_obj.close()
-#    with open(level_file.file_path, "r") as f:
-#        text = f.read()
-#    with open(level_file.file_path, "w") as f:
-#        len_of_name = level_file.len_from_1_char + 4
-#        print(len_of_name)
-#        text = delete_from_str(text, 2136, 2136+len_of_name)
-#        new_name_bytes = str_to_file_bytes(level_file.new_name.decode())
-#        print(new_name_bytes)
-#        text = insert_into_str(text, new_name_bytes, 2136)
-#        f.write(text)
+    # Change name last if necessary, since that means we don't have to
+    # recalculate all the offsets. Since the length may change, I opt to read
+    # the file in as a string, manipulate it, then write it all back. I do not
+    # know how to insert into/remove bytes from a file any more nicely
+    if level_file.new_name is None:
+        return
+
+    def delete_from_str(in_str, start, end):
+        return in_str[:start] + in_str[end:]
+
+    def insert_into_str(in_str, text_to_insert, location):
+        before, after = in_str[:location], in_str[location:]
+        return before + text_to_insert + after
+
+    def file_bytes_to_str(in_bytes):
+        hex_as_hex = decode(in_bytes, "hex")
+        return decode(hex_as_hex, "hex")
+
+    def str_to_file_bytes(in_str):
+        # This .upper() was a doozy
+        str_as_hex = "".join("{:02x}".format(ord(char)) for char in in_str).upper()
+        return "".join("{:02x}".format(ord(char)) for char in str_as_hex)
+
+    level_file.update_name_len()
+    level_file.mmap_obj.close()
+    with open(level_file.file_path, "r") as f:
+        text = f.read()
+    with open(level_file.file_path, "w") as f:
+        len_of_old_name = level_file.len_from_1_char + 4
+        text_no_name = delete_from_str(text, 2136, 2136+len_of_old_name)
+        new_name_bytes = str_to_file_bytes(level_file.new_name.decode())
+        text_w_new_name = insert_into_str(text_no_name, new_name_bytes, 2136)
+        f.write(text_w_new_name)
+
+##    Trying to do it without creating a new file object, not sure there's a point
+#    level_file.update_name_len()
+#    text = level_file.mmap_obj.read()
+#    len_of_old_name = level_file.len_from_1_char + 4
+#    text_no_name = delete_from_str(text, 2136, 2136+len_of_old_name)
+#    new_name_bytes = str_to_file_bytes(level_file.new_name.decode())
+#    text_w_new_name = insert_into_str(text_no_name, new_name_bytes, 2136)
+#    f.write(text_w_new_name)
 

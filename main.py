@@ -38,7 +38,7 @@ cell_top_str = "+---"
 cell_bottom_str = "| " + symbols["empty space"] + " "
 
 custom_scr = ExtendedScreen(
-        cell_top_str, cell_bottom_str, symbols["empty space"], 
+        cell_top_str, cell_bottom_str, symbols["empty space"],
         symbols["collision"], symbols["out of bounds"]
         )
 
@@ -74,7 +74,7 @@ def main(screen):
             if recording:
                 recorded_keys[register] = []
 
-        if(recording and key not in keybinds["record"] 
+        if(recording and key not in keybinds["record"]
         and key not in keybinds["change register"]):
             recorded_keys[register].append(key)
 

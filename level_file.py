@@ -15,7 +15,6 @@ class LevelFile:
         self.h_blocks = to_int(h_bytes) - 1
         self.w = self.w_blocks * 16
         self.h = self.h_blocks * 16
-        self.new_name = None
 
         # The amount of file length contributed by collision (+1 is for the
         # mysterious extra 0 at the end of every row)
@@ -25,6 +24,9 @@ class LevelFile:
 
         # How much longer the column is (in chars) compared to minimum size
         self.col_len_from_min = (self.h_blocks - 18) * 24
+
+        self.new_name = None
+        self.setting_str_len_num_location = 464 + self.col_len_from_min
 
         raw_offsets = [
                 2880, 50928, 98976, 147024, 195072, 243120, 291168, 339216,
@@ -80,7 +82,7 @@ class LevelFile:
             for pair_start in range(group_start, group_start+group_len, 48):  # pair of double and type number
                 # Weird bytes below represent int 0 plus double -1, so -1 and its type number
                 self.mmap_obj[pair_start:pair_start+48] = b"303030303030303030303030303030303030303046304246"
-            
+
     def insert_obj(self, level_obj):
         doubles_to_insert = [level_obj.obj_id, level_obj.x_pixels, level_obj.y_pixels] \
                             + level_obj.additional_data
@@ -94,7 +96,7 @@ class LevelFile:
     def return_obj_group_offset(self, x_pos_to_check, y_pos_to_check):
         """Calculate offset from 1st item in group"""
         # 48 is derived from size of double + int, since there is a type number before the double
-        for x_group_offset, y_group_offset in zip(range(self.obj_group_offsets[1], self.obj_group_offsets[2], 48), 
+        for x_group_offset, y_group_offset in zip(range(self.obj_group_offsets[1], self.obj_group_offsets[2], 48),
                                                   range(self.obj_group_offsets[2], self.obj_group_offsets[3], 48)):
             x_hex = self.mmap_obj[x_group_offset:x_group_offset+32]
             y_hex = self.mmap_obj[y_group_offset:y_group_offset+32]
@@ -129,6 +131,17 @@ class LevelFile:
         base_offset = self.return_col_offset(xpos)
         offset = (base_offset) + ypos*24
         self.mmap_obj[offset:offset+16] = bytes_to_add
+
+    def update_name_len(self):  # The len number means len after it's decode, so it's 2 not 4
+        # Update len of setting string
+        num_letters = len(self.new_name)
+        new_settings_len = ((num_letters * 2) - 2) + 948
+        new_settings_len_bytes = to_file_bytes(new_settings_len, inner_table=False, num_type="i")
+        self.mmap_obj[self.setting_str_len_num_location:self.setting_str_len_num_location+8] = new_settings_len_bytes
+        # Update len of name string
+        num_letters_bytes = to_file_bytes(num_letters, inner_table=True, num_type="i")
+        name_len_location = 2120 + self.col_len_from_min
+        self.mmap_obj[name_len_location:name_len_location+16] = num_letters_bytes
 
     def set_option(self, option_num, val):
         # If music is selected, we need to turn the song number into the
@@ -170,6 +183,6 @@ class LevelFile:
 
 
 if __name__ == "__main__":
-    test_inst = LevelFile("/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/113_45_goal/a.lvl")
+    test_inst = LevelFile("/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/512_288/a.lvl")
     #print(test_inst.setting_offsets[3])
-    print(f"{test_inst.col_len_from_min=}")
+    print(f"{test_inst.setting_str_len_num_location=}")

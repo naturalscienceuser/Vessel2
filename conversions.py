@@ -2,17 +2,22 @@ import codecs
 import binascii
 import struct
 
-def to_int(in_str, byte_order="little"):
+def flip_bytes(in_str):
+    sbytes = [in_str[i]+in_str[i+1] for i in range(0, len(in_str), 2)]
+    sbytes.reverse()
+    return "".join(sbytes)
+
+
+def to_int(in_str, byte_order="little", inner_table=False):
     if type(in_str) == type(b""):
         in_str = in_str.decode()
 
-    def flip_bytes(in_str):
-        sbytes = [in_str[i]+in_str[i+1] for i in range(0, len(in_str), 2)]
-        sbytes.reverse()
-        return "".join(sbytes)
+    if inner_table:
+        in_str = codecs.decode(in_str.encode(), "hex").decode()
 
     if byte_order == "little":
         in_str = flip_bytes(in_str)
+
     return int(in_str, 16)
 
 
@@ -45,14 +50,19 @@ def to_double(in_str, byte_order="little", inner_table=False):
     return struct.unpack(format, binary)[0]  # we use [0] b/c it returns a tuple
 
 
-def to_file_bytes(in_double, inner_table=True):
+def to_file_bytes(in_num, inner_table=True, num_type="d"):
     """
-    If you want to slap the bytes into an inner table, set inner_table to true. This will return
-    a length 32 string as oppposed to length 16
+    If you want to slap the bytes into an inner table, set inner_table to true.
+    This will return a length 32 string as oppposed to length 16, also, see
+    https://docs.python.org/2/library/struct.html for possible formats
     """
-    binary = struct.pack("d", in_double)
+    binary = struct.pack(num_type, in_num)
     hex_from_bin = binascii.hexlify(binary).upper()  # hope .upper() doesn't break anything
     if inner_table:
         return codecs.encode(hex_from_bin, "hex")
     else:
         return hex_from_bin
+
+if __name__ == "__main__":
+    test_bytes = to_file_bytes(4, inner_table=True, num_type="i")
+    print(test_bytes)
