@@ -17,6 +17,8 @@ def write_out(level_file, in_grid):
         for i, cell_val in enumerate(row):
             try:
                 cell_symbol, cell_data = cell_val[0], cell_val[2:].split(",")
+                if cell_symbol in (symbols["coin"], symbols["goal"], symbols["spawn"]):
+                    continue
                 # KeyError if no obj symbol in grid, in which case we don't insert object
                 obj_double = symbol_doubles[cell_symbol]
             except KeyError:
