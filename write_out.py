@@ -27,11 +27,7 @@ def write_out(level_file, in_grid):
                 elif cell_symbol == empty_val:
                     remove = True
                 level_file.add_remove_collision(i, row_num, remove)
-                obj_group_offset = level_file.return_obj_group_offset(i*16, row_num*16)
-                # If there was no object there to begin with, why bother removing?
-                if obj_group_offset is None:  # No obj present
-                    continue
-                level_file.remove_obj(obj_group_offset)
+                #level_file.remove_obj(i*16, row_num*16)
             else:
                 x_offset, y_offset = int(cell_data[0]), int(cell_data[1])
                 additional_data = [int(data) for data in cell_data[2:]]
