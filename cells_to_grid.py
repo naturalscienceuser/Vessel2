@@ -75,25 +75,3 @@ def set_collis_cells(level_file, grid):
 
     for coordset in ground_coords:
         grid.set_point(coordset[0], coordset[1], symbols["collision"])
-
-
-#def return_spawn_coords(level_file):
-#    return [int(level_file.get_option(8)/16), int(level_file.get_option(0)/16)]
-#
-#def return_goal_coords(level_file):
-#    return [int(level_file.get_option(9)/16), int(level_file.get_option(3)/16)]
-#
-#def return_coin_coords(level_file):
-#    return [int(level_file.get_option(6)/16), int(level_file.get_option(12)/16)]
-
-#def set_spawn_coords(level_file, grid):
-#    spawn_coords = return_spawn_coords(level_file)
-#    grid.set_point(spawn_coords[0], spawn_coords[1], symbols["spawn"])
-#
-#def set_goal_coords(level_file, grid):
-#    goal_coords = [int(level_file.get_option(9)/16), int(level_file.get_option(3)/16)]
-#    grid.set_point(goal_coords[0], goal_coords[1], symbols["goal"])
-#
-#def set_coin_coords(level_file, grid):
-#    coin_coords = [int(level_file.get_option(6)/16), int(level_file.get_option(12)/16)]
-#    grid.set_point(coin_coords[0], coin_coords[1], symbols["coin"])

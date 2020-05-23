@@ -55,10 +55,10 @@ def change_settings(custom_scr, grid, level_file):
     item_num = menu(custom_scr, "SETTINGS (q quits)", level_file.setting_names)
     if item_num is None:
         return
-    val_for_option = float(prompt(custom_scr))
+    val_for_setting = float(prompt(custom_scr))
     previous_spawn, previous_goal, previous_coin = \
             level_file.spawn_coords, level_file.goal_coords, level_file.coin_coords
-    level_file.set_option(item_num, val_for_option)
+    level_file.set_setting(item_num, val_for_setting)
     if item_num in (0, 8):
         grid.set_point(previous_spawn[0], previous_spawn[1], symbols["empty space"])
         grid.set_point(level_file.spawn_coords[0], level_file.spawn_coords[1], symbols["spawn"])
@@ -70,10 +70,8 @@ def change_settings(custom_scr, grid, level_file):
         grid.set_point(level_file.coin_coords[0], level_file.coin_coords[1], symbols["coin"])
 
 def change_obj_offset(custom_scr, grid, cell_contents):
-    """
-    cell_contents is literally the contents of the cell in the grid object
-    under the cursor, eg. m,0,0,1,0,0,0,0,1
-    """
+    # cell_contents is literally the contents of the cell in the grid object
+    # under the cursor, eg. m,0,0,1,0,0,0,0,1
     x_offset = prompt(custom_scr, prompt_text="Enter x: ").decode()
     y_offset = prompt(custom_scr, prompt_text="Enter y: ").decode()
     icon, properties = cell_contents[0], cell_contents[6:]
@@ -81,10 +79,8 @@ def change_obj_offset(custom_scr, grid, cell_contents):
     set_cell(custom_scr, grid, cell_contents) 
 
 def change_obj_properties(custom_scr, grid, cell_contents):
-    """
-    cell_contents is literally the contents of the cell in the grid object
-    under the cursor, eg. m,0,0,1,0,0,0,0,1
-    """
+    # cell_contents is literally the contents of the cell in the grid object
+    # under the cursor, eg. m,0,0,1,0,0,0,0,1
     icon, offsets = cell_contents[0], cell_contents[2:5]
     properties = []
     for i in range(1, 7):
