@@ -132,9 +132,10 @@ class LevelFile:
         offset = (base_offset) + ypos*24
         self.mmap_obj[offset:offset+16] = bytes_to_add
 
-    def update_name_len(self):  # The len number means len after it's decode, so it's 2 not 4
+    def update_name_len(self):
         # Update len of setting string
         num_letters = len(self.new_name)
+        # The len number means len after it's decode, so it's 2 not 4
         new_settings_len = ((num_letters * 2) - 2) + 948
         new_settings_len_bytes = to_file_bytes(new_settings_len, inner_table=False, num_type="i")
         self.mmap_obj[self.setting_str_len_num_location:self.setting_str_len_num_location+8] = new_settings_len_bytes
@@ -143,46 +144,45 @@ class LevelFile:
         name_len_location = 2120 + self.col_len_from_min
         self.mmap_obj[name_len_location:name_len_location+16] = num_letters_bytes
 
-    def set_option(self, option_num, val):
+    def set_setting(self, setting_num, val):
         # If music is selected, we need to turn the song number into the
         # corresponding float. For some reason the levelfile itself doesn't use
         # 0-8 as vals even though songs are displayed that way, but rather
         # these seemingly arbitrary values
-        if option_num == 4:
+        if setting_num == 4:
             music_vals = {
                 "0": 0, "1": 29, "2": 34, "3": 35, "4": 36, "5": 40, "6": 42,
                 "7": 90, "8": 125
                 }
-            val = music_vals[str(val)]
-        offset = self.setting_offsets[option_num]
+            val = music_vals[str(int(val))]
+        offset = self.setting_offsets[setting_num]
         val_bytes = to_file_bytes(val)
         self.mmap_obj[offset:offset+32] = val_bytes
 
-        if option_num in (0, 8):
+        if setting_num in (0, 8):
             self.spawn_coords = self.return_spawn_coords()
-        elif option_num in (3, 9):
+        elif setting_num in (3, 9):
             self.goal_coords = self.return_goal_coords()
-        elif option_num in (6, 12):
+        elif setting_num in (6, 12):
             self.coin_coords = self.return_coin_coords()
 
 
-    def get_option(self, option_num):
-        offset = self.setting_offsets[option_num]
+    def get_setting(self, setting_num):
+        offset = self.setting_offsets[setting_num]
         val_bytes = self.mmap_obj[offset:offset+32]
         val = to_double(val_bytes, inner_table=True)
         return val
 
     def return_spawn_coords(self):
-        return [int(self.get_option(8)/16), int(self.get_option(0)/16)]
+        return [int(self.get_setting(8)/16), int(self.get_setting(0)/16)]
 
     def return_goal_coords(self):
-        return [int(self.get_option(9)/16), int(self.get_option(3)/16)]
+        return [int(self.get_setting(9)/16), int(self.get_setting(3)/16)]
 
     def return_coin_coords(self):
-        return [int(self.get_option(6)/16), int(self.get_option(12)/16)]
+        return [int(self.get_setting(6)/16), int(self.get_setting(12)/16)]
 
 
 if __name__ == "__main__":
     test_inst = LevelFile("/Users/Joesaccount/Documents/coding_for_fun/WL_curses/object_branch_levelfile/512_288/a.lvl")
-    #print(test_inst.setting_offsets[3])
     print(f"{test_inst.setting_str_len_num_location=}")
