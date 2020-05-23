@@ -55,7 +55,7 @@ def change_settings(custom_scr, grid, level_file):
     item_num = menu(custom_scr, "SETTINGS (q quits)", level_file.setting_names)
     if item_num is None:
         return
-    val_for_option = int(prompt(custom_scr))
+    val_for_option = float(prompt(custom_scr))
     previous_spawn, previous_goal, previous_coin = \
             level_file.spawn_coords, level_file.goal_coords, level_file.coin_coords
     level_file.set_option(item_num, val_for_option)
