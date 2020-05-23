@@ -123,14 +123,17 @@ def menu(custom_scr, title, items):
 
         custom_scr.scr.addstr(menu_text)
         selection = None
-        while selection not in [str(i) for i in range(10)]:
+        while selection not in [str(i) for i in range(10)] and selection != "q":
             selection = custom_scr.scr.getkey()
+        # At this point we're done with the menu, so restore the status quo
+        draw_cell_boundaries(custom_scr)
+        curs_set(1)  # Show cursor again
+        custom_scr.scr.move(initial_y, initial_x)
         if selection == "9":
             current_page = pages.__next__()
             continue
-        custom_scr.scr.move(initial_y, initial_x)
-        draw_cell_boundaries(custom_scr)
-        curs_set(1)  # Show cursor again
+        elif selection == "q":
+            return None
         item_num = int(selection) + (9*current_page)
         #if item_num == something, change prompt?
         return item_num

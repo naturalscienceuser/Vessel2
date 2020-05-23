@@ -92,8 +92,9 @@ def main(screen):
             change_settings(custom_scr, grid, level_file)
 
         elif key in keybinds["object menu"]:
-            designated_char_index = menu(custom_scr, "OBJECT MENU", obj_names)
-            designated_char = obj_symbols_list[designated_char_index]
+            designated_char_index = menu(custom_scr, "OBJECT MENU (q quits)", obj_names)
+            if not designated_char_index is None:
+                designated_char = obj_symbols_list[designated_char_index]
 
         elif key in keybinds["collision mode"]:
             designated_char = symbols["collision"]
