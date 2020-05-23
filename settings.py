@@ -19,7 +19,7 @@ for i in range(0, len(symbol_file_lines), 3):
 
 for symbol in symbols_list:
     if symbols_list.count(symbol) > 1:
-        print("Duplicate symbols in symbols.txt; exiting")
+        print("Duplicate symbol {symbol} in symbols.txt; exiting")
         sys.exit()
 
 # So to add symbols, it would appear that we would need to add the double to the end of the list, and then add the symbol to the end of symbols file
