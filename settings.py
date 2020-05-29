@@ -35,16 +35,19 @@ obj_names = [symbol_name for symbol_name in symbols.keys()][objs_start:]
 symbol_doubles = {symbol:double for symbol, double in zip(obj_symbols_list, symbol_doubles_list)}
 double_symbols = {double:symbol for symbol, double in symbol_doubles.items()}
 
-keybinds = {}
+mappings_to_keys = {}
+keys_to_mappings = {}  # {"c": "place", "m": "object menu", ...} hopefully
 movement_keys = []
 for loop_count, i in enumerate(range(0, len(keybind_file_lines), 3)):
     key_name = keybind_file_lines[i].lower()
     values = keybind_file_lines[i+1].split(",")
-    keybinds[key_name] = values
+    mappings_to_keys[key_name] = values
+    for value in values:
+        keys_to_mappings[value] = key_name
     if loop_count < 14:
         for value in values:
             movement_keys.append(value)
 
 
 if __name__ == "__main__":
-    print(symbols["coin"])
+    print(mappings_to_keys)

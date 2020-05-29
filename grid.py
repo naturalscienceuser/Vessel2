@@ -24,6 +24,12 @@ class Grid:
         self.y_offset = 0
         self.array = [[empty_val for i in range(self.w)] for i in range(self.h)]
 
+    def change_x_offset(self, amt):
+        self.x_offset += amt
+
+    def change_y_offset(self, amt):
+        self.y_offset += amt
+
     def set_point(self, x_to_set, y_to_set, val_to_set):
         self.array[y_to_set][x_to_set] = val_to_set
 
