@@ -1,8 +1,7 @@
 from movement import shift_cursor, move_to_row_pos, move_to_col_pos
-from settings import mappings_to_keys, symbols, keys_to_mappings
+from settings import symbols, keys_to_mappings
 from conversions import to_grid_xy
 from display import set_cell, menu, prompt
-import sys
 from functools import partial
 from curses import error
 
@@ -28,9 +27,9 @@ def handle_movement(custom_scr, grid, in_key):
     try:
         mappings_to_actions[mapping]()
     except error:  # move cursor to negative coordinates
-        if in_key in mappings_to_keys["up"] and grid.y_offset > 0:
+        if mapping == "up" and grid.y_offset > 0:
             grid.y_offset -= 1
-        elif in_key in mappings_to_keys["left"] and grid.x_offset > 0:
+        elif mapping == "left" and grid.x_offset > 0:
             grid.x_offset -= 1
         custom_scr.scr.move(initial_y, initial_x)
         return
