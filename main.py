@@ -6,7 +6,7 @@ from cells_to_grid import set_obj_cells, set_collis_cells
 from display import draw_cell_boundaries, populate_screen_cells, set_footer, menu, prompt, set_cell
 from handle_keystrokes import handle_movement, change_settings, change_obj_offset, change_obj_properties, place_obj_or_collis
 from extended_screen import ExtendedScreen
-from settings import keybinds, movement_keys, symbols, obj_symbols_list, obj_names
+from settings import mappings_to_keys, movement_keys, symbols, obj_symbols_list, obj_names
 from level_file import LevelFile
 from conversions import to_grid_xy
 import sys
@@ -66,40 +66,40 @@ def main(screen):
                 continue
             key_index += 1
 
-        if key in keybinds["quit"]:
+        if key in mappings_to_keys["quit"]:
             break
 
-        elif key in keybinds["record"]:
+        elif key in mappings_to_keys["record"]:
             recording = not recording
             if recording:
                 recorded_keys[register] = []
 
-        if(recording and key not in keybinds["record"]
-        and key not in keybinds["change register"]):
+        if(recording and key not in mappings_to_keys["record"]
+        and key not in mappings_to_keys["change register"]):
             recorded_keys[register].append(key)
 
-        elif key in keybinds["playback"]:
+        elif key in mappings_to_keys["playback"]:
             playing_back = True
             continue  # do we need this? alternatively, should they all have continues?
 
-        if key in keybinds["change register"]:
+        if key in mappings_to_keys["change register"]:
             register = custom_scr.scr.getkey()
 
         elif key in movement_keys:
             handle_movement(custom_scr, grid, key)
 
-        elif key in keybinds["settings menu"]:
+        elif key in mappings_to_keys["settings menu"]:
             change_settings(custom_scr, grid, level_file)
 
-        elif key in keybinds["object menu"]:
+        elif key in mappings_to_keys["object menu"]:
             designated_char_index = menu(custom_scr, "OBJECT MENU (q quits)", obj_names)
             if not designated_char_index is None:
                 designated_char = obj_symbols_list[designated_char_index]
 
-        elif key in keybinds["collision mode"]:
+        elif key in mappings_to_keys["collision mode"]:
             designated_char = symbols["collision"]
 
-        elif key in keybinds["rename"]:
+        elif key in mappings_to_keys["rename"]:
             level_file.new_name = prompt(custom_scr, "Enter a new name: ")
 
         grid_x, grid_y = to_grid_xy(custom_scr)
@@ -108,13 +108,13 @@ def main(screen):
         except IndexError:
             cell_contents = symbols["out of bounds"]
 
-        if key in keybinds["place"]:
+        if key in mappings_to_keys["place"]:
             place_obj_or_collis(custom_scr, grid, designated_char, cell_contents)
 
-        if key in keybinds["position"]:
+        if key in mappings_to_keys["position"]:
             change_obj_offset(custom_scr, grid, cell_contents)
 
-        elif key in keybinds["properties"]:
+        elif key in mappings_to_keys["properties"]:
             change_obj_properties(custom_scr, grid, cell_contents)
 
         set_footer(custom_scr, grid, recording, register, cell_contents[2:])

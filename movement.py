@@ -1,15 +1,15 @@
-from settings import keybinds
+from settings import mappings_to_keys
 from conversions import *
 
 def shift_cursor(custom_scr, dir_to_move, amt=1):
     current_y, current_x = custom_scr.scr.getyx()
-    if dir_to_move in keybinds["up"]:
+    if dir_to_move in mappings_to_keys["up"]:
         custom_scr.scr.move(current_y - amt, current_x)
-    elif dir_to_move in keybinds["down"]:
+    elif dir_to_move in mappings_to_keys["down"]:
         custom_scr.scr.move(current_y + amt, current_x)
-    elif dir_to_move in keybinds["left"]:
+    elif dir_to_move in mappings_to_keys["left"]:
         custom_scr.scr.move(current_y, current_x - amt)
-    elif dir_to_move in keybinds["right"]:
+    elif dir_to_move in mappings_to_keys["right"]:
         custom_scr.scr.move(current_y, current_x + amt)
 
 def move_to_row_pos(custom_scr, in_pos="start"):
