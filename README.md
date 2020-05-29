@@ -1,7 +1,10 @@
 ## Summary
-Vessel is a command-line level editor for Waveland custom level files. It supports adding/removing collision and objects and changing level settings, and input recording and playback.
+Vessel is a command-line level editor for Waveland custom level files. It supports adding/removing collision and objects and changing level settings, and input recording and playback. A demo can be found at https://streamable.com/c0tx0e
 
 ## Usage
+```
+python3 main.py path/to/level/file
+```
 The editor takes 1 argument, which is the path to the level file you want to edit. Vessel does not have the ability to create new level files from scratch; it can only edit existing ones. Keybinds can be found in the keybinds.txt file, and a brief explanation will be provided here:
 
 * Up, Down, Left, and Right move the cursor 1 cell in a given direction
