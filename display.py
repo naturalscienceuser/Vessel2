@@ -154,37 +154,3 @@ def prompt(custom_scr, prompt_text="Enter value: "):
     custom_scr.scr.move(initial_y, initial_x)
     return entered_text
 
-
-#if __name__ == "__main__":
-#    from extended_screen import ExtendedScreen
-#    custom_scr = None
-#    obj_names = symbols_list[3:]
-#    display_menu(None, "TEST", obj_names)
-
-#def display_menu(custom_scr):
-#    initial_y, initial_x = custom_scr.scr.getyx()
-#    custom_scr.scr.move(0,0)
-#    menu_text = "OBJECT MENU".center(58) + "|\n"
-#    menu_text += "-"*58 + "|\n"
-#    # We turn it into a list basically just so we can slice it, such that it
-#    # only contains keybinds that correspond to object placements
-#    obj_key_pairs = [[obj_name, key] for obj_name, key in keybinds.items()][20:]
-#    for i, pair in enumerate(obj_key_pairs):
-#        justified_obj_name = pair[0].ljust(18)
-#        justified_keybinds = str(pair[1]).ljust(10)
-#        menu_text += f"{justified_obj_name.title()} {justified_keybinds}"
-#        if i % 2 != 0:
-#            menu_text += "|\n"
-#    # since it's 2 cols, we need to account for if there are an odd number of obj/key pairs
-#    if len(obj_key_pairs) % 2 != 0:
-#        menu_text += "\n"
-#    menu_text += "="*59 + "\n" + " "*59
-#    custom_scr.scr.addstr(menu_text)
-#    custom_scr.scr.move(initial_y, initial_x)
-
-#    menu_text = f"Dash Refresher: {keybinds['dash refresh']} | Checkpoint: {keybinds['checkpoint']}\n"\
-#                f"Shine Block: {keybinds['shine block']} | Bomb Block: {keybinds['bomb block']}\n"\
-#                f"Metal Block: {keybinds['metal block']} | Fuse: {keybinds['fuse']}\n"\
-#                f"Jump Pad: {keybinds['jump pad']} | Ice Block: {keybinds['ice block']}\n"\
-#                f"Blue Switch Block: {keybinds['blue switch block']} | Red Switch Block: {keybinds['red switch block']}\n"\
-#                f"Dark Block: {keybinds['dark block']}"
