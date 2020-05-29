@@ -15,9 +15,14 @@ def log_var(in_var):
     with open("test.txt", "w") as f:
         print(in_var, file=f)
 
-filepath = sys.argv[1]  # 0st item is name of script, so index 1 is the first actual argument
+if len(sys.argv) <= 1:
+    print("Please include a path to the file you would like to edit")
+    sys.exit()
+
+filepath = sys.argv[1]
 if not path.exists(filepath):
     raise IOError("File not found!")
+    sys.exit(1)
 
 level_file = LevelFile(filepath)
 grid = Grid(level_file.w_blocks, level_file.h_blocks)
