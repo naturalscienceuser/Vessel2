@@ -20,14 +20,14 @@ def handle_movement(custom_scr, grid, in_key):
             "shift left": partial(grid.change_x_offset, -1),
             "shift right": partial(grid.change_x_offset, 1),
             "shift down": partial(grid.change_y_offset, 1),
-            "up": partial(shift_cursor, custom_scr, "up", custom_scr.cell_h),  # TODO: Why doesn't this just get the attribute itself?
+            "up": partial(shift_cursor, custom_scr, "up", custom_scr.cell_h),
             "down": partial(shift_cursor, custom_scr, "down", custom_scr.cell_h),
             "left": partial(shift_cursor, custom_scr, "left", custom_scr.cell_w),
             "right": partial(shift_cursor, custom_scr, "right", custom_scr.cell_w),
             }
     try:
         mappings_to_actions[mapping]()
-    except error:  # very creatively named curses error
+    except error:  # move cursor to negative coordinates
         if in_key in mappings_to_keys["up"] and grid.y_offset > 0:
             grid.y_offset -= 1
         elif in_key in mappings_to_keys["left"] and grid.x_offset > 0:
@@ -36,10 +36,12 @@ def handle_movement(custom_scr, grid, in_key):
         return
 
     grid_x, grid_y = to_grid_xy(custom_scr)
-    if grid_x > custom_scr.cells_in_row - 1:  # moving cursor past end of screen row
+    # moving cursor past end of screen row
+    if grid_x > custom_scr.cells_in_row - 1:
         grid.x_offset += 1
         custom_scr.scr.move(initial_y, initial_x)
-    elif grid_y > custom_scr.cells_in_col - 1:  # moving cursor past end of screen col
+    # moving cursor past end of screen col
+    elif grid_y > custom_scr.cells_in_col - 1:
         grid.y_offset += 1
         custom_scr.scr.move(initial_y, initial_x)
 
