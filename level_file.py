@@ -92,30 +92,6 @@ class LevelFile:
             bytes_to_insert = to_file_bytes(double_to_insert)
             self.mmap_obj[offset:offset+32] = bytes_to_insert
 
-#    def remove_obj(self, x_pos, y_pos):
-#
-#        def return_obj_group_offset(x_pos_to_check, y_pos_to_check):
-#            """Calculate offset from 1st item in group"""
-#            # 48 is derived from size of double + int, since there is a type number before the double
-#            for x_group_offset, y_group_offset in zip(range(self.obj_group_offsets[1], self.obj_group_offsets[2], 48),
-#                                                      range(self.obj_group_offsets[2], self.obj_group_offsets[3], 48)):
-#                x_hex = self.mmap_obj[x_group_offset:x_group_offset+32]
-#                y_hex = self.mmap_obj[y_group_offset:y_group_offset+32]
-#                x_val_at_offset = to_double(x_hex, inner_table=True)
-#                y_val_at_offset = to_double(y_hex, inner_table=True)
-#                if (x_val_at_offset, y_val_at_offset) == (x_pos_to_check, y_pos_to_check):
-#                    # We could have used y group or whatever to calculate the offset from first item in group, chose x_group arbitrarily
-#                    return x_group_offset - self.obj_group_offsets[1]
-#            return None  # In this case there is no object
-#
-#        group_offset = return_obj_group_offset(x_pos, y_pos)
-#        if group_offset is None:  # There was no obj there anyway
-#            return
-#        null_bytes = to_file_bytes(-1.0)
-#        for offset in self.obj_group_offsets:
-#            offset += group_offset  # account for obj's pos in group
-#            self.mmap_obj[offset:offset+32] = null_bytes
-
     # Could this be an inner function somewhere too?
     def return_col_offset(self, col_num):
         if col_num == 0:
