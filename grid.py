@@ -9,7 +9,7 @@ values representing x and y offset (which allows for pixel perfect positioning)
 and the 6 additional properties (size, angle, all that). The cells_to_grid
 module loads a level file and converts it into this grid, while the write_out
 module takes this grid object and changes the level file to reflect its
-contents. It's an intermediate data format, basically
+contents. The grid an intermediate data format, basically
 """
 
 empty_val = symbols["empty space"]
@@ -34,4 +34,8 @@ class Grid:
         self.array[y_to_set][x_to_set] = val_to_set
 
     def get_point(self, x_to_get, y_to_get):
-        return self.array[y_to_get][x_to_get]
+        try:
+            return self.array[y_to_get][x_to_get]
+        except IndexError:
+            return symbols["out of bounds"]
+
