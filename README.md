@@ -1,5 +1,5 @@
 ## Summary
-Vessel is a command-line level editor for Waveland custom level files. It supports adding/removing collision and objects and changing level settings, and input recording and playback. A demo can be found at https://streamable.com/c0tx0e
+Vessel is a command-line level editor for Waveland custom level files. It supports adding/removing collision and objects and changing level settings, and input recording and playback. A demo can be found at https://youtu.be/lHbhCn0ZINY
 
 ## Usage
 ```
